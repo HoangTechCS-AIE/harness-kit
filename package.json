@@ -1,0 +1,34 @@
+{
+  "name": "harness-kit",
+  "version": "0.1.0",
+  "description": "Harness Engineering starter kit — thiết lập repo cho coding agent theo 5 mức trưởng thành (CLAUDE.md, context, guardrails, long-running, evals).",
+  "bin": {
+    "harness-kit": "bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "templates/",
+    "skills/",
+    "docs/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "claude-code",
+    "harness-engineering",
+    "ai-agents",
+    "context-engineering",
+    "CLAUDE.md"
+  ],
+  "author": "HoangTechCS-AIE",
+  "license": "MIT",
+  "homepage": "https://github.com/HoangTechCS-AIE/harness-kit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HoangTechCS-AIE/harness-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HoangTechCS-AIE/harness-kit/issues"
+  }
+}
