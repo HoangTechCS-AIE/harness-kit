@@ -1,15 +1,41 @@
-# harness-kit
+<div align="center">
+
+# 🛠️ harness-kit
+
+**Thiết lập repo cho coding agent (Claude Code) theo 5 mức trưởng thành của harness engineering — bằng một lệnh.**
+
+[![npm](https://img.shields.io/npm/v/harness-kit?logo=npm&color=cb3837)](https://www.npmjs.com/package/harness-kit)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+![node](https://img.shields.io/badge/node-%E2%89%A518-brightgreen)
 
 **Tiếng Việt** · [English](README.en.md)
 
-> Thiết lập một repo cho coding agent (Claude Code) theo **5 mức trưởng thành** của harness
-> engineering — bằng một lệnh.
+</div>
+
+---
 
 **Harness** = mọi thứ *bao quanh* model (context, chỉ dẫn, tools, ràng buộc an toàn, orchestration,
 đo lường) để agent làm việc đáng tin. Kit này đóng gói nó thành **artifact** cài được + một
 **tutorial** dạy *khi nào* dùng từng thứ. Kit ship file; tutorial dạy kỷ luật.
 
-## Cài nhanh
+## ⚙️ Hoạt động thế nào
+
+```mermaid
+flowchart LR
+    D([Bạn]) -->|"npx harness-kit"| I[["harness-kit<br/>installer"]]
+    I --> R1[".claude/<br/>settings.json · agents/"]
+    I --> R2["repo root<br/>setup.sh · TASK.md"]
+    I --> R3["~/.claude/skills/<br/>init-harness"]
+    I --> R4["docs/harness/<br/>tutorial + guides"]
+    R1 --> A([Claude Code<br/>đọc mỗi session])
+    R2 --> A
+    R3 --> A
+    R4 --> A
+```
+
+Một lệnh `npx` rải artifact vào đúng chỗ; từ đó Claude Code đọc chúng ở mọi phiên làm việc.
+
+## 🚀 Cài nhanh
 
 ```bash
 npx harness-kit              # hỏi chọn mức rồi cài
@@ -17,12 +43,19 @@ npx harness-kit --all        # cài cả 5 mức
 npx harness-kit --levels=1,3 # chỉ mức cụ thể
 ```
 
-Cần **Node ≥18**. Lệnh đổ artifact vào đúng chỗ (`.claude/`, root repo, `~/.claude/skills/`) và lưu
-toàn bộ tài liệu vào `docs/harness/` để team giữ lại. **Idempotent** — chạy lại an toàn (`--force`
-để ghi đè). Muốn cài tay để hiểu từng mức? Xem lệnh `cp` ở mỗi mức bên dưới — installer chỉ tự động
-hoá đúng những lệnh đó.
+Cần **Node ≥18**. Lệnh lưu toàn bộ tài liệu vào `docs/harness/` để team giữ lại. **Idempotent** —
+chạy lại an toàn (`--force` để ghi đè).
 
-## Trong kit có gì — mỗi mức chặn một kiểu thất bại
+## 🪜 5 mức — mỗi mức chặn một kiểu thất bại
+
+```mermaid
+flowchart TD
+    L1["Mức 1 · Nền tảng — CLAUDE.md"] --> L2["Mức 2 · Context sạch"]
+    L2 --> L3["Mức 3 · Guardrails"]
+    L3 --> L4["Mức 4 · Long-running"]
+    L4 --> L5["Mức 5 · Evals & Observability"]
+    L5 -.->|"phát hiện lỗi → gia cố harness"| L1
+```
 
 | Mức | Khi không có nó | Artifact |
 |-----|-----------------|----------|
@@ -32,54 +65,74 @@ hoá đúng những lệnh đó.
 | **4 — Long-running** | việc dài đứt giữa chừng, không resume | `setup.sh`, `new-worktree.sh`, `TASK.md` |
 | **5 — Evals & Obs** | không biết agent làm tốt hay tệ | golden-task template + guide observability |
 
-## 5 mức (chi tiết + cài tay)
+## 📦 Cài tay từng mức
 
-### Mức 1 — Nền tảng · `CLAUDE.md` &nbsp;`[làm trước tiên]`
+> Installer chỉ tự động hoá đúng những lệnh `cp` dưới đây — mở ra nếu muốn hiểu/làm thủ công.
+
+<details>
+<summary><b>Mức 1 — Nền tảng · CLAUDE.md</b> &nbsp;<code>[làm trước tiên]</code></summary>
+
 ```bash
 cp -r skills/init-harness ~/.claude/skills/   # rồi gõ /init-harness trong repo đích
 ```
+</details>
 
-### Mức 2 — Context sạch
+<details>
+<summary><b>Mức 2 — Context sạch</b></summary>
+
 ```bash
 mkdir -p .claude/agents && cp templates/agents/repo-explorer.md .claude/agents/
 ```
 Đọc `templates/agents/README.md` + `templates/mcp-audit.md`.
+</details>
 
-### Mức 3 — Guardrails &nbsp;`[trỏ vào CLAUDE.md]`
+<details>
+<summary><b>Mức 3 — Guardrails</b> &nbsp;<code>[trỏ vào CLAUDE.md]</code></summary>
+
 ```bash
 mkdir -p .claude && cp templates/settings.json .claude/settings.json
 ```
 **Việc đầu tiên:** thêm lệnh test/lint của repo vào `allow` (xem `templates/guardrails/README.md`).
+</details>
 
-### Mức 4 — Long-running &nbsp;`[trỏ vào CLAUDE.md]`
+<details>
+<summary><b>Mức 4 — Long-running</b> &nbsp;<code>[trỏ vào CLAUDE.md]</code></summary>
+
 ```bash
 cp templates/setup.sh templates/new-worktree.sh . && chmod +x setup.sh new-worktree.sh
 cp templates/long-running/TASK.md .            # khi bắt đầu một việc dài
 ```
+</details>
 
-### Mức 5 — Evals & Observability &nbsp;`[cần ≥1 mức đã áp để có cái mà đo]`
+<details>
+<summary><b>Mức 5 — Evals & Observability</b> &nbsp;<code>[cần ≥1 mức đã áp để có cái mà đo]</code></summary>
+
 ```bash
 mkdir -p evals/cases && cp templates/evals/cases/example-task.md evals/cases/
 ```
 Đọc `templates/evals/README.md` (có bước **baseline không-harness**) + `observability.md`.
+</details>
 
-### + Specs (nửa còn lại của Trụ cột 2)
+<details>
+<summary><b>+ Specs</b> — nửa còn lại của Trụ cột 2</summary>
+
 ```bash
 mkdir -p docs/specs && cp templates/spec/FEATURE.md docs/specs/<feature>.md
 ```
+</details>
 
-## Phụ thuộc giữa các mức
+## 🔗 Phụ thuộc giữa các mức
 
 - **Mức 1 trước hết** — xương sống; các mức sau viện tới `CLAUDE.md`.
 - **Mức 3 & 4** đều "trỏ `CLAUDE.md` tới" artifact của chúng → cần Mức 1 xong.
-- **Mức 5** cần ít nhất một mức đã áp để có thay đổi mà đo.
+- **Mức 5** cần ít nhất một mức đã áp để có thay đổi mà đo (xem vòng feedback ở sơ đồ trên).
 
-## Tài liệu
+## 📚 Tài liệu
 
-`docs/harness-engineering-tutorial.md` (sau khi cài: `docs/harness/tutorial.md`) — vì sao + *khi nào*
-dùng từng thứ. Danh mục nguồn đầy đủ của cả ngành:
+`docs/harness-engineering-tutorial.md` ([English](docs/harness-engineering-tutorial.en.md)) — vì sao +
+*khi nào* dùng từng thứ (sau khi cài: `docs/harness/`). Danh mục nguồn đầy đủ của cả ngành:
 [Awesome Harness Engineering](https://github.com/walkinglabs/awesome-harness-engineering).
 
-## License
+## 📄 License
 
 [MIT](LICENSE).

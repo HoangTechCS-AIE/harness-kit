@@ -1,7 +1,5 @@
 # Harness Engineering cho Team — Tutorial thực chiến (Claude Code & Codex)
 
-**Tiếng Việt** · [English](harness-engineering-tutorial.en.md)
-
 > Dành cho dev đã quen dùng AI coding agent, muốn hiểu sâu *vì sao* agent lúc tốt lúc tệ và *làm gì* để nó đáng tin cậy hơn.
 > Tài liệu này là bản tinh gọn + thực hành, dựa trên các nguồn trong [Awesome Harness Engineering](https://github.com/walkinglabs/awesome-harness-engineering/blob/main/README.md). Mỗi phần đều có link đọc sâu.
 

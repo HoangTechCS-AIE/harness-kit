@@ -1,16 +1,42 @@
-# harness-kit
+<div align="center">
+
+# 🛠️ harness-kit
+
+**Set up any repo for a coding agent (Claude Code) across the 5 maturity levels of harness engineering — in one command.**
+
+[![npm](https://img.shields.io/npm/v/harness-kit?logo=npm&color=cb3837)](https://www.npmjs.com/package/harness-kit)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+![node](https://img.shields.io/badge/node-%E2%89%A518-brightgreen)
 
 [Tiếng Việt](README.md) · **English**
 
-> Set up a repo for a coding agent (Claude Code) across the **5 maturity levels** of harness
-> engineering — in one command.
+</div>
+
+---
 
 **Harness** = everything *around* the model (context, instructions, tools, safety constraints,
 orchestration, measurement) that makes an agent reliable. This kit packages it into installable
 **artifacts** plus a **tutorial** that teaches *when* to use each. The kit ships files; the tutorial
 teaches the discipline.
 
-## Quick install
+## ⚙️ How it works
+
+```mermaid
+flowchart LR
+    D([You]) -->|"npx harness-kit"| I[["harness-kit<br/>installer"]]
+    I --> R1[".claude/<br/>settings.json · agents/"]
+    I --> R2["repo root<br/>setup.sh · TASK.md"]
+    I --> R3["~/.claude/skills/<br/>init-harness"]
+    I --> R4["docs/harness/<br/>tutorial + guides"]
+    R1 --> A([Claude Code<br/>reads every session])
+    R2 --> A
+    R3 --> A
+    R4 --> A
+```
+
+One `npx` command drops artifacts in the right places; from there Claude Code reads them every session.
+
+## 🚀 Quick install
 
 ```bash
 npx harness-kit              # pick levels interactively, then install
@@ -18,12 +44,19 @@ npx harness-kit --all        # install all 5 levels
 npx harness-kit --levels=1,3 # specific levels only
 ```
 
-Requires **Node ≥18**. The command drops artifacts in the right places (`.claude/`, repo root,
-`~/.claude/skills/`) and saves all docs into `docs/harness/` so your team keeps them. **Idempotent**
-— safe to re-run (`--force` to overwrite). Prefer installing by hand to understand each level? See
-the `cp` commands per level below — the installer just automates exactly those.
+Requires **Node ≥18**. The command saves all docs into `docs/harness/` so your team keeps them.
+**Idempotent** — safe to re-run (`--force` to overwrite).
 
-## What's in the kit — each level prevents a failure mode
+## 🪜 The 5 levels — each prevents a failure mode
+
+```mermaid
+flowchart TD
+    L1["Level 1 · Foundation — CLAUDE.md"] --> L2["Level 2 · Clean context"]
+    L2 --> L3["Level 3 · Guardrails"]
+    L3 --> L4["Level 4 · Long-running"]
+    L4 --> L5["Level 5 · Evals & Observability"]
+    L5 -.->|"surface a failure → reinforce the harness"| L1
+```
 
 | Level | Without it | Artifact |
 |-------|------------|----------|
@@ -33,54 +66,74 @@ the `cp` commands per level below — the installer just automates exactly those
 | **4 — Long-running** | long tasks break mid-way, can't resume | `setup.sh`, `new-worktree.sh`, `TASK.md` |
 | **5 — Evals & Obs** | no idea whether the agent does well or badly | golden-task template + observability guide |
 
-## The 5 levels (detail + manual install)
+## 📦 Manual install per level
 
-### Level 1 — Foundation · `CLAUDE.md` &nbsp;`[do this first]`
+> The installer just automates the `cp` commands below — expand them to understand/do it by hand.
+
+<details>
+<summary><b>Level 1 — Foundation · CLAUDE.md</b> &nbsp;<code>[do this first]</code></summary>
+
 ```bash
 cp -r skills/init-harness ~/.claude/skills/   # then run /init-harness in the target repo
 ```
+</details>
 
-### Level 2 — Clean context
+<details>
+<summary><b>Level 2 — Clean context</b></summary>
+
 ```bash
 mkdir -p .claude/agents && cp templates/agents/repo-explorer.md .claude/agents/
 ```
 Read `templates/agents/README.md` + `templates/mcp-audit.md`.
+</details>
 
-### Level 3 — Guardrails &nbsp;`[points into CLAUDE.md]`
+<details>
+<summary><b>Level 3 — Guardrails</b> &nbsp;<code>[points into CLAUDE.md]</code></summary>
+
 ```bash
 mkdir -p .claude && cp templates/settings.json .claude/settings.json
 ```
 **First thing to do:** add your repo's test/lint commands to `allow` (see `templates/guardrails/README.md`).
+</details>
 
-### Level 4 — Long-running &nbsp;`[points into CLAUDE.md]`
+<details>
+<summary><b>Level 4 — Long-running</b> &nbsp;<code>[points into CLAUDE.md]</code></summary>
+
 ```bash
 cp templates/setup.sh templates/new-worktree.sh . && chmod +x setup.sh new-worktree.sh
 cp templates/long-running/TASK.md .            # when starting a long task
 ```
+</details>
 
-### Level 5 — Evals & Observability &nbsp;`[needs ≥1 level applied to have something to measure]`
+<details>
+<summary><b>Level 5 — Evals & Observability</b> &nbsp;<code>[needs ≥1 level applied to have something to measure]</code></summary>
+
 ```bash
 mkdir -p evals/cases && cp templates/evals/cases/example-task.md evals/cases/
 ```
 Read `templates/evals/README.md` (includes a **no-harness baseline** step) + `observability.md`.
+</details>
 
-### + Specs (the other half of Pillar 2)
+<details>
+<summary><b>+ Specs</b> — the other half of Pillar 2</summary>
+
 ```bash
 mkdir -p docs/specs && cp templates/spec/FEATURE.md docs/specs/<feature>.md
 ```
+</details>
 
-## Level dependencies
+## 🔗 Level dependencies
 
 - **Level 1 first** — it's the backbone; later levels reference `CLAUDE.md`.
 - **Levels 3 & 4** both "point `CLAUDE.md` to" their artifacts → require Level 1 done.
-- **Level 5** needs at least one level applied to have a change to measure.
+- **Level 5** needs at least one level applied to have a change to measure (see the feedback loop above).
 
-## Docs
+## 📚 Docs
 
-`docs/harness-engineering-tutorial.md` (after install: `docs/harness/tutorial.md`) — the why + *when*
-to use each piece. Note: the tutorial prose is in Vietnamese. Full industry-wide source catalog:
+`docs/harness-engineering-tutorial.en.md` ([Tiếng Việt](docs/harness-engineering-tutorial.md)) — the
+why + *when* to use each piece (after install: `docs/harness/`). Full industry-wide source catalog:
 [Awesome Harness Engineering](https://github.com/walkinglabs/awesome-harness-engineering).
 
-## License
+## 📄 License
 
 [MIT](LICENSE).

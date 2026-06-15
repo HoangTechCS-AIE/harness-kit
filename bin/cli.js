@@ -57,6 +57,7 @@ const LEVELS = {
 const GUIDE_DIR = path.join('docs', 'harness')
 const GUIDE = [
   ['docs/harness-engineering-tutorial.md', 'tutorial.md'],
+  ['docs/harness-engineering-tutorial.en.md', 'tutorial.en.md'],
   ['README.md', 'kit-README.md'],
   ['templates/agents/README.md', 'agents-README.md'],
   ['templates/mcp-audit.md', 'mcp-audit.md'],
