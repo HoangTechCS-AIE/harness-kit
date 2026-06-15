@@ -1,5 +1,7 @@
 # harness-kit
 
+**Tiếng Việt** · [English](README.en.md)
+
 > Thiết lập một repo cho coding agent (Claude Code) theo **5 mức trưởng thành** của harness
 > engineering — bằng một lệnh.
 
