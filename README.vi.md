@@ -131,12 +131,33 @@ mkdir -p docs/specs && cp templates/spec/FEATURE.md docs/specs/<feature>.md
 - **Mức 3 & 4** đều "trỏ `CLAUDE.md` tới" artifact của chúng → cần Mức 1 xong.
 - **Mức 5** cần ít nhất một mức đã áp để có thay đổi mà đo (xem vòng feedback ở sơ đồ trên).
 
-## 6. Tài liệu
+## 6. Benchmark guardrails
+
+Guardrails ở Mức 3 được *đo*, không nói suông. Một benchmark tái lập được cho 25 thao tác rủi ro
+(lệnh thảm hoạ, đọc file secret, lệnh dev an toàn) chạy qua các rule phân quyền và chấm xem cái gì
+bị chặn / gác / cho phép.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/HoangTechCS-AIE/harness-kit/main/assets/guardrails-chart.png" width="760" alt="Guardrails coverage: default vs hardened">
+</p>
+
+Bộ mặc định gác **68%** ngay khi cài; profile hardened nâng lên **92%** — chặn cứng **6/8 lệnh thảm
+hoạ** và **7/7 lần đọc file secret**. Đây là **độ phủ chính sách** guardrail, không phải tỉ lệ hoàn
+thành task.
+
+```bash
+node bench/guardrails-bench.js                                                       # default
+node bench/guardrails-bench.js templates/settings.json bench/settings.hardened.json  # before / after
+```
+
+Xem [`bench/RESULTS.md`](bench/RESULTS.md) cho phương pháp đo và 2 gap còn lại.
+
+## 7. Tài liệu
 
 `docs/harness-engineering-tutorial.md` ([English](docs/harness-engineering-tutorial.en.md)) — vì sao +
 *khi nào* dùng từng thứ (sau khi cài: `docs/harness/`). Danh mục nguồn đầy đủ của cả ngành:
 [Awesome Harness Engineering](https://github.com/walkinglabs/awesome-harness-engineering).
 
-## 7. License
+## 8. License
 
 [MIT](LICENSE).

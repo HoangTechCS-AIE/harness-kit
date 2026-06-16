@@ -132,12 +132,33 @@ mkdir -p docs/specs && cp templates/spec/FEATURE.md docs/specs/<feature>.md
 - **Levels 3 & 4** both "point `CLAUDE.md` to" their artifacts → require Level 1 done.
 - **Level 5** needs at least one level applied to have a change to measure (see the feedback loop above).
 
-## 6. Docs
+## 6. Guardrails benchmark
+
+The Level 3 guardrails are *measured*, not asserted. A reproducible benchmark runs a 25-op risk
+suite (catastrophic commands, secret-file reads, safe dev ops) through the permission rules and
+scores what is denied / gated / allowed.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/HoangTechCS-AIE/harness-kit/main/assets/guardrails-chart.png" width="760" alt="Guardrails coverage: default vs hardened">
+</p>
+
+The shipped defaults gate **68%** of the suite out of the box; a hardened profile raises it to
+**92%** — blocking **6/8 catastrophic ops** and **7/7 secret-file reads**. This measures guardrail
+*policy coverage*, not task success.
+
+```bash
+node bench/guardrails-bench.js                                                       # default
+node bench/guardrails-bench.js templates/settings.json bench/settings.hardened.json  # before / after
+```
+
+See [`bench/RESULTS.md`](bench/RESULTS.md) for methodology and the two residual gaps.
+
+## 7. Docs
 
 `docs/harness-engineering-tutorial.en.md` ([Vietnamese](docs/harness-engineering-tutorial.md)) — the
 why + *when* to use each piece (after install: `docs/harness/`). Full industry-wide source catalog:
 [Awesome Harness Engineering](https://github.com/walkinglabs/awesome-harness-engineering).
 
-## 7. License
+## 8. License
 
 [MIT](LICENSE).
