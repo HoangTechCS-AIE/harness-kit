@@ -139,7 +139,7 @@ suite (catastrophic commands, secret-file reads, safe dev ops) through the permi
 scores what is denied / gated / allowed.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HoangTechCS-AIE/harness-kit/main/assets/guardrails-chart.png" width="760" alt="Guardrails coverage: default vs hardened">
+  <img src="https://raw.githubusercontent.com/HoangTechCS-AIE/harness-kit/main/assets/guardrails-slope.png" width="720" alt="Guardrails coverage: default vs hardened">
 </p>
 
 The shipped defaults gate **68%** of the suite out of the box; a hardened profile raises it to

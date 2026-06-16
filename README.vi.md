@@ -138,7 +138,7 @@ Guardrails ở Mức 3 được *đo*, không nói suông. Một benchmark tái 
 bị chặn / gác / cho phép.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HoangTechCS-AIE/harness-kit/main/assets/guardrails-chart.png" width="760" alt="Guardrails coverage: default vs hardened">
+  <img src="https://raw.githubusercontent.com/HoangTechCS-AIE/harness-kit/main/assets/guardrails-slope.png" width="720" alt="Guardrails coverage: default vs hardened">
 </p>
 
 Bộ mặc định gác **68%** ngay khi cài; profile hardened nâng lên **92%** — chặn cứng **6/8 lệnh thảm
