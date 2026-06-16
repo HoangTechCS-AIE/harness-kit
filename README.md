@@ -4,7 +4,7 @@
 
 **Thiết lập repo cho coding agent (Claude Code) theo 5 mức trưởng thành của harness engineering — bằng một lệnh.**
 
-[![npm](https://img.shields.io/npm/v/harness-kit?logo=npm&color=cb3837)](https://www.npmjs.com/package/harness-kit)
+[![npm](https://img.shields.io/npm/v/@htechcs/harness-kit?logo=npm&color=cb3837)](https://www.npmjs.com/package/@htechcs/harness-kit)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 ![node](https://img.shields.io/badge/node-%E2%89%A518-brightgreen)
 
@@ -22,7 +22,7 @@
 
 ```mermaid
 flowchart LR
-    D([Bạn]) -->|"npx harness-kit"| I[["harness-kit<br/>installer"]]
+    D([Bạn]) -->|"npx @htechcs/harness-kit"| I[["harness-kit<br/>installer"]]
     I --> R1[".claude/<br/>settings.json · agents/"]
     I --> R2["repo root<br/>setup.sh · TASK.md"]
     I --> R3["~/.claude/skills/<br/>init-harness"]
@@ -38,9 +38,9 @@ Một lệnh `npx` rải artifact vào đúng chỗ; từ đó Claude Code đọ
 ## 🚀 Cài nhanh
 
 ```bash
-npx harness-kit              # hỏi chọn mức rồi cài
-npx harness-kit --all        # cài cả 5 mức
-npx harness-kit --levels=1,3 # chỉ mức cụ thể
+npx @htechcs/harness-kit              # hỏi chọn mức rồi cài
+npx @htechcs/harness-kit --all        # cài cả 5 mức
+npx @htechcs/harness-kit --levels=1,3 # chỉ mức cụ thể
 ```
 
 Cần **Node ≥18**. Lệnh lưu toàn bộ tài liệu vào `docs/harness/` để team giữ lại. **Idempotent** —

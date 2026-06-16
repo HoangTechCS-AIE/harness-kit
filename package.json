@@ -1,5 +1,5 @@
 {
-  "name": "harness-kit",
+  "name": "@htechcs/harness-kit",
   "version": "0.1.0",
   "description": "Harness Engineering starter kit — thiết lập repo cho coding agent theo 5 mức trưởng thành (CLAUDE.md, context, guardrails, long-running, evals).",
   "bin": {
@@ -9,7 +9,8 @@
     "bin/",
     "templates/",
     "skills/",
-    "docs/"
+    "docs/harness-engineering-tutorial.md",
+    "docs/harness-engineering-tutorial.en.md"
   ],
   "engines": {
     "node": ">=18"
@@ -23,6 +24,9 @@
   ],
   "author": "HoangTechCS-AIE",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "https://github.com/HoangTechCS-AIE/harness-kit#readme",
   "repository": {
     "type": "git",
