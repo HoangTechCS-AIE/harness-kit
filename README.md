@@ -10,6 +10,10 @@
 
 **Tiếng Việt** · [English](README.en.md)
 
+<br>
+
+<img src="https://raw.githubusercontent.com/HoangTechCS-AIE/harness-kit/main/assets/demo.gif" width="700" alt="harness-kit demo">
+
 </div>
 
 ---
