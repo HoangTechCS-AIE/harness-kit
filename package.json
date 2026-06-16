@@ -1,6 +1,6 @@
 {
   "name": "@htechcs/harness-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Harness Engineering starter kit — thiết lập repo cho coding agent theo 5 mức trưởng thành (CLAUDE.md, context, guardrails, long-running, evals).",
   "bin": {
     "harness-kit": "bin/cli.js"

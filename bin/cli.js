@@ -1,59 +1,59 @@
 #!/usr/bin/env node
 'use strict'
 
-// harness-kit — installer cho Harness Engineering starter kit.
-// Chạy: npx harness-kit            (hỏi chọn mức)
-//        npx harness-kit --all      (cài hết, không hỏi)
-//        npx harness-kit --levels=1,3,4
-// Cờ phụ: --target=<dir> (mặc định thư mục hiện tại), --force (ghi đè), --help.
+// harness-kit — installer for the Harness Engineering starter kit.
+// Run: npx @htechcs/harness-kit            (pick levels)
+//      npx @htechcs/harness-kit --all      (install all, no prompt)
+//      npx @htechcs/harness-kit --levels=1,3
+// Extra flags: --target=<dir> (default: current directory), --force (overwrite), --help.
 //
-// Nguyên tắc: IDEMPOTENT (chạy lại an toàn — file đã có thì bỏ qua trừ khi --force)
-// và FAIL-SOFT (thiếu một artifact thì cảnh báo, không sập cả lần cài).
+// Principles: IDEMPOTENT (safe to re-run — existing files are skipped unless --force)
+// and FAIL-SOFT (a missing artifact is warned about, it doesn't abort the whole install).
 
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
 const readline = require('readline')
 
-const KIT = path.resolve(__dirname, '..') // gốc package (nơi có templates/, skills/, docs/)
+const KIT = path.resolve(__dirname, '..') // package root (holds templates/, skills/, docs/)
 const HOME = os.homedir()
-let TARGET = process.cwd() // đặt lại trong main(); dùng để hiển thị đường dẫn cho gọn
+let TARGET = process.cwd() // reset in main(); used to print tidy relative paths
 
-// ---- Bản đồ artifact theo mức: [nguồn-trong-kit, đích]. Đích tuyệt đối = cài cấp user. ----
+// ---- Artifact map per level: [source-in-kit, destination]. Absolute dest = user-level install. ----
 const LEVELS = {
   '1': {
-    title: 'Mức 1 — Nền tảng (CLAUDE.md)',
+    title: 'Level 1 — Foundation (CLAUDE.md)',
     copy: [['skills/init-harness', path.join(HOME, '.claude', 'skills', 'init-harness')]],
-    next: 'Gõ  /init-harness  trong repo đích để sinh CLAUDE.md.',
+    next: 'Run  /init-harness  in the target repo to generate CLAUDE.md.',
   },
   '2': {
-    title: 'Mức 2 — Context sạch',
+    title: 'Level 2 — Clean context',
     copy: [['templates/agents/repo-explorer.md', '.claude/agents/repo-explorer.md']],
-    next: 'Đọc docs/harness/agents-README.md (quy tắc subagent) + mcp-audit.md (rà MCP thừa).',
+    next: 'Read docs/harness/agents-README.md (subagent rules) + mcp-audit.md (prune unused MCP servers).',
   },
   '3': {
-    title: 'Mức 3 — Guardrails',
+    title: 'Level 3 — Guardrails',
     copy: [['templates/settings.json', '.claude/settings.json']],
-    next: 'MỞ .claude/settings.json → thêm lệnh test/lint của repo vào "allow" (xem docs/harness/guardrails-README.md). Đây là việc ĐẦU TIÊN.',
+    next: 'OPEN .claude/settings.json → add your repo\'s test/lint commands to "allow" (see docs/harness/guardrails-README.md). Do this FIRST.',
   },
   '4': {
-    title: 'Mức 4 — Long-running',
+    title: 'Level 4 — Long-running',
     copy: [
       ['templates/setup.sh', 'setup.sh'],
       ['templates/new-worktree.sh', 'new-worktree.sh'],
     ],
     chmod: ['setup.sh', 'new-worktree.sh'],
-    next: 'Điền setup.sh cho repo bạn; copy docs/harness/TASK.md ra khi bắt đầu một việc dài.',
+    next: 'Fill in setup.sh for your repo; copy docs/harness/TASK.md out when you start a long task.',
   },
   '5': {
-    title: 'Mức 5 — Evals & Observability',
+    title: 'Level 5 — Evals & Observability',
     copy: [['templates/evals/cases/example-task.md', 'evals/cases/example-task.md']],
-    next: 'Đọc docs/harness/evals-README.md (có bước baseline "không harness") + observability.md.',
+    next: 'Read docs/harness/evals-README.md (includes a no-harness baseline step) + observability.md.',
   },
 }
 
-// ---- Tài liệu hướng dẫn: luôn copy vào <target>/docs/harness/ để team GIỮ LẠI ----
-// (npx cache biến mất sau khi chạy, nên phải đổ guidance vào repo.)
+// ---- Guidance docs: always copied into <target>/docs/harness/ so the team keeps them ----
+// (the npx cache disappears after the run, so the guidance must land in the repo.)
 const GUIDE_DIR = path.join('docs', 'harness')
 const GUIDE = [
   ['docs/harness-engineering-tutorial.md', 'tutorial.md'],
@@ -84,19 +84,19 @@ function parseArgs(argv) {
 
 function showHelp() {
   console.log(`
-harness-kit — thiết lập repo cho coding agent theo 5 mức.
+harness-kit — set up a repo for a coding agent across 5 maturity levels.
 
-  npx harness-kit                 hỏi chọn mức rồi cài
-  npx harness-kit --all           cài cả 5 mức
-  npx harness-kit --levels=1,3    cài mức cụ thể
+  npx @htechcs/harness-kit              pick levels interactively, then install
+  npx @htechcs/harness-kit --all        install all 5 levels
+  npx @htechcs/harness-kit --levels=1,3 install specific levels
 
-Cờ:
-  --target=<dir>   thư mục đích (mặc định: thư mục hiện tại)
-  --force          ghi đè file đã tồn tại (mặc định: bỏ qua)
+Flags:
+  --target=<dir>   target directory (default: current directory)
+  --force          overwrite existing files (default: skip)
   --help
 
-Mức: 1 Nền tảng · 2 Context · 3 Guardrails · 4 Long-running · 5 Evals.
-Tài liệu luôn được đổ vào <target>/docs/harness/.
+Levels: 1 Foundation · 2 Context · 3 Guardrails · 4 Long-running · 5 Evals.
+Docs are always written to <target>/docs/harness/.
 `)
 }
 
@@ -106,15 +106,15 @@ function rel(p) {
   return p
 }
 
-// Đặt một artifact. destAbs: đường dẫn tuyệt đối đã resolve.
+// Place one artifact. destAbs: an already-resolved absolute path.
 function place(srcRel, destAbs, force) {
   const src = path.join(KIT, srcRel)
   if (!fs.existsSync(src)) {
-    console.log(`  ⚠ thiếu trong kit, bỏ qua: ${srcRel}`)
+    console.log(`  ⚠ missing in kit, skipping: ${srcRel}`)
     return false
   }
   if (fs.existsSync(destAbs) && !force) {
-    console.log(`  • đã có, giữ nguyên: ${rel(destAbs)}  (dùng --force để ghi đè)`)
+    console.log(`  • exists, keeping: ${rel(destAbs)}  (use --force to overwrite)`)
     return false
   }
   fs.mkdirSync(path.dirname(destAbs), { recursive: true })
@@ -126,7 +126,7 @@ function place(srcRel, destAbs, force) {
 function installLevel(key, target, force) {
   const lv = LEVELS[key]
   if (!lv) {
-    console.log(`\n(bỏ qua mức không hợp lệ: ${key})`)
+    console.log(`\n(skipping invalid level: ${key})`)
     return
   }
   console.log(`\n${lv.title}`)
@@ -141,7 +141,7 @@ function installLevel(key, target, force) {
 }
 
 function installGuide(target, force) {
-  console.log(`\nTài liệu hướng dẫn → ${path.join(rel(path.join(target, GUIDE_DIR)))}/`)
+  console.log(`\nGuidance docs → ${path.join(rel(path.join(target, GUIDE_DIR)))}/`)
   for (const [srcRel, name] of GUIDE) {
     place(srcRel, path.join(target, GUIDE_DIR, name), force)
   }
@@ -157,26 +157,26 @@ async function main() {
   if (opt.help) { showHelp(); return }
 
   TARGET = opt.target
-  console.log(`harness-kit → cài vào: ${opt.target}`)
+  console.log(`harness-kit → installing into: ${opt.target}`)
 
   let levels
   if (opt.all) levels = Object.keys(LEVELS)
   else if (opt.levels) levels = opt.levels
   else if (process.stdin.isTTY) {
-    const a = (await ask('\nCài mức nào? [all] hoặc danh sách vd 1,3,4: ')).trim()
+    const a = (await ask('\nWhich levels? [all] or a list e.g. 1,3,4: ')).trim()
     levels = !a || a.toLowerCase() === 'all' ? Object.keys(LEVELS) : a.split(',').map((s) => s.trim()).filter(Boolean)
   } else {
-    levels = Object.keys(LEVELS) // không có TTY (CI/pipe) → cài hết
+    levels = Object.keys(LEVELS) // no TTY (CI/pipe) → install everything
   }
 
   for (const k of levels) installLevel(k, opt.target, opt.force)
   installGuide(opt.target, opt.force)
 
-  console.log('\n— Xong. Bước tiếp theo —')
+  console.log('\n— Done. Next steps —')
   for (const k of levels) {
     if (LEVELS[k]) console.log(`  [${k}] ${LEVELS[k].next}`)
   }
-  console.log('\nĐọc trước hết: docs/harness/tutorial.md (vì sao + KHI NÀO dùng từng thứ).')
+  console.log('\nRead first: docs/harness/tutorial.md (the why + WHEN to use each piece).')
 }
 
-main().catch((e) => { console.error('harness-kit lỗi:', e.message); process.exit(1) })
+main().catch((e) => { console.error('harness-kit error:', e.message); process.exit(1) })
