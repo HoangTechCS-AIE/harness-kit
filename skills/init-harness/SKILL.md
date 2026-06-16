@@ -1,68 +1,68 @@
 ---
 name: init-harness
-description: Sinh file CLAUDE.md "đạt chuẩn harness engineering" cho một repo, thay cho /init mặc định. Phân tích codebase để điền WHAT/WHY/HOW (stack, build/test/run, kiến trúc, quy ước), rồi hỏi xác nhận đúng 2 phần không tự đoán được — Guardrails (ràng buộc hành vi agent) và Definition of Done (khi nào coi là xong) — những thứ /init bỏ sót. Tuân thủ kỷ luật của HumanLayer "Writing a good CLAUDE.md": ngắn (<300 dòng, lý tưởng ~60), pointer thay vì copy, không nhồi style/convention (để cho linter), craft thủ công chứ không auto-generate. Dùng skill này khi người dùng muốn tạo/chuẩn hóa CLAUDE.md, "init harness", thiết lập repo cho coding agent. Hiện chỉ làm CLAUDE.md (Claude Code); AGENTS.md/Codex sẽ bổ sung sau.
-argument-hint: [đường dẫn repo, mặc định là thư mục hiện tại]
+description: Generate a "harness-engineering-grade" CLAUDE.md for a repo, replacing the default /init. Analyzes the codebase to fill in WHAT/WHY/HOW (stack, build/test/run, architecture, conventions), then asks to confirm exactly the 2 things it can't infer — Guardrails (constraints on agent behavior) and Definition of Done (when work counts as finished) — the parts /init omits. Follows HumanLayer's "Writing a good CLAUDE.md" discipline: short (<300 lines, ideally ~60), pointers instead of copies, no style/convention stuffing (leave that to the linter), hand-crafted rather than auto-generated. Use this skill when the user wants to create/standardize a CLAUDE.md, "init harness", or set up a repo for a coding agent. Currently does CLAUDE.md only (Claude Code); AGENTS.md/Codex to be added later.
+argument-hint: [repo path, defaults to the current directory]
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
 ---
 
-# init-harness — CLAUDE.md đạt chuẩn harness engineering
+# init-harness — a harness-engineering-grade CLAUDE.md
 
-Sinh ra một `CLAUDE.md` là **repo-local instruction bền vững** mà Claude Code đọc trong *mọi*
-session. Khác `/init` mặc định ở chỗ: `/init` chỉ **mô tả hiện trạng** repo (đây là gì, build ra sao);
-skill này còn **quy định hành vi agent** (Guardrails + Definition of Done) và tuân thủ kỷ luật
-quản lý context của nguồn chuẩn.
+Produce a `CLAUDE.md` that is a **durable repo-local instruction** Claude Code reads in *every*
+session. It differs from the default `/init`: `/init` only **describes the current state** of the repo
+(what it is, how to build it); this skill also **defines agent behavior** (Guardrails + Definition of
+Done) and follows the canonical source's context-management discipline.
 
-## Nguyên tắc nền (không được vi phạm)
+## Foundational principles (never violate)
 
-Trích từ [Writing a good CLAUDE.md — HumanLayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md):
+From [Writing a good CLAUDE.md — HumanLayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md):
 
-- **"LLMs are stateless functions"** — `CLAUDE.md` là file *duy nhất* nạp vào *mọi* session. Mọi dòng phải xứng đáng.
-- **"Less is more"** — model theo được ~150–200 instruction; system prompt đã chiếm ~50. Giữ file **dưới 300 dòng, nhắm ~60–120**.
-- **"Prefer pointers to copies"** — trỏ tới `path/file.ts:42`, KHÔNG copy snippet code vào file.
-- **Không nhồi style/convention** — để linter/formatter lo. Đừng viết "dùng 2 space", "đặt tên camelCase".
-- **Chỉ chứa cái universally relevant** — thông tin theo task cụ thể để riêng, link tới khi cần (progressive disclosure).
-- **Right altitude — đừng hardcode luật cứng** — nguồn chuẩn cảnh báo HAI cực NGANG NHAU: quá mơ hồ *và* quá cứng ("overly complex hardcoded logic"). Viết heuristic/ranh giới ổn định, KHÔNG nhồi chuỗi if-this-then-that cho từng edge-case (làm `CLAUDE.md` giòn, mâu thuẫn, khó bảo trì). Quy tắc chỉ đúng trong một task cụ thể → đẩy ra file theo-task, đừng nhét vào `CLAUDE.md`.
-- **Craft, đừng auto-dump** — nguồn chuẩn nói thẳng *don't auto-generate*. Skill này phân tích để *đề xuất*, nhưng phải chắt lọc, không đổ raw.
-- **Viết cái KHÔNG hiển nhiên** — bỏ cây thư mục (agent tự khám phá), bỏ lời khuyên chung ("viết code sạch").
+- **"LLMs are stateless functions"** — `CLAUDE.md` is the *only* file loaded into *every* session. Every line must earn its place.
+- **"Less is more"** — a model can follow ~150–200 instructions; the system prompt already takes ~50. Keep the file **under 300 lines, aim for ~60–120**.
+- **"Prefer pointers to copies"** — point to `path/file.ts:42`, do NOT copy code snippets into the file.
+- **No style/convention stuffing** — leave that to the linter/formatter. Don't write "use 2 spaces", "name things camelCase".
+- **Only universally relevant content** — task-specific info goes elsewhere, link to it when needed (progressive disclosure).
+- **Right altitude — don't hardcode rigid rules** — the canonical source warns of TWO EQUAL extremes: too vague *and* too rigid ("overly complex hardcoded logic"). Write stable heuristics/boundaries, do NOT stuff in if-this-then-that chains for every edge case (that makes `CLAUDE.md` brittle, contradictory, hard to maintain). A rule that's only true for one task → push it to a per-task file, don't cram it into `CLAUDE.md`.
+- **Craft, don't auto-dump** — the canonical source says it plainly: *don't auto-generate*. This skill analyzes to *propose*, but must distill, not dump raw.
+- **Write the NON-obvious** — drop the directory tree (the agent discovers it), drop generic advice ("write clean code").
 
-Hai phần làm nên "harness" (mà `/init` thiếu):
-- **Guardrails** — agent *không được* làm gì, *phải* làm gì trước khi báo xong, thao tác nào cần xác nhận.
-- **Definition of Done** — bằng chứng cụ thể (test pass, build xanh, lint sạch) để agent tự verify trước khi tuyên bố hoàn thành.
+The two parts that make a "harness" (which `/init` lacks):
+- **Guardrails** — what the agent *must not* do, what it *must* do before declaring done, which operations need confirmation.
+- **Definition of Done** — concrete evidence (tests pass, build green, lint clean) for the agent to self-verify before claiming completion.
 
-## Quy trình
+## Procedure
 
-### B1 — Xác định repo & quét hiện trạng
+### Step 1 — Identify the repo & scan the current state
 
-- Repo đích = `$ARGUMENTS` nếu có, ngược lại là thư mục hiện tại. Xác nhận là git repo (`git rev-parse --show-toplevel`).
-- Nếu đã có `CLAUDE.md` → đọc, đề xuất *cải thiện* thay vì ghi đè mù. Hỏi trước khi overwrite.
-- Gom nguồn sẵn có để hợp nhất (đừng để rải rác): `README.md`, `.cursorrules` / `.cursor/rules/`, `.github/copilot-instructions.md`, `AGENTS.md` nếu có.
+- Target repo = `$ARGUMENTS` if given, otherwise the current directory. Confirm it's a git repo (`git rev-parse --show-toplevel`).
+- If a `CLAUDE.md` already exists → read it, propose *improvements* rather than blindly overwriting. Ask before overwriting.
+- Gather existing sources to consolidate (don't leave them scattered): `README.md`, `.cursorrules` / `.cursor/rules/`, `.github/copilot-instructions.md`, `AGENTS.md` if present.
 
-### B2 — Suy ra WHAT / WHY / HOW (tự động, đậm đặc)
+### Step 2 — Infer WHAT / WHY / HOW (automatic, dense)
 
-Phân tích codebase, KHÔNG hỏi những gì đoán được:
+Analyze the codebase; do NOT ask for what you can infer:
 
-- **HOW (ưu tiên cao nhất — agent cần để chạy vòng lặp):**
-  - Build / run / test / lint / typecheck — đọc từ `package.json` scripts, `Makefile`, `justfile`, `pyproject.toml`, `Cargo.toml`, `go.mod`, CI workflow…
-  - **Lệnh chạy MỘT test đơn lẻ** — bắt buộc tìm cho ra (vd `pytest path::test_x`, `vitest run -t "name"`, `go test -run`). Đây là thứ tăng tốc feedback loop nhất.
-  - Tool đặc thù: `bun` vs `node`, `uv` vs `pip`, package manager nào.
-- **WHAT:** tech stack, ranh giới module, "map" codebase (đặc biệt quan trọng với monorepo). Mô tả *big picture cần đọc nhiều file mới hiểu*, KHÔNG liệt kê từng file.
-- **WHY:** mục đích dự án, vai trò từng phần chính — 1–3 câu.
+- **HOW (highest priority — the agent needs it to run the loop):**
+  - Build / run / test / lint / typecheck — read from `package.json` scripts, `Makefile`, `justfile`, `pyproject.toml`, `Cargo.toml`, `go.mod`, CI workflows…
+  - **The command to run a SINGLE test** — you must find it (e.g. `pytest path::test_x`, `vitest run -t "name"`, `go test -run`). This is the biggest feedback-loop speed-up.
+  - Specific tooling: `bun` vs `node`, `uv` vs `pip`, which package manager.
+- **WHAT:** tech stack, module boundaries, a "map" of the codebase (especially important for a monorepo). Describe the *big picture you only get from reading many files*, do NOT list every file.
+- **WHY:** the project's purpose, the role of each major part — 1–3 sentences.
 
-### B3 — Hỏi xác nhận ĐÚNG 2 phần không đoán được (gom 1 lượt duy nhất)
+### Step 3 — Ask to confirm EXACTLY the 2 things you can't infer (in a single round)
 
-Dùng AskUserQuestion, gộp tất cả vào một lượt (tôn trọng context budget):
+Use AskUserQuestion, bundling everything into one round (respect the context budget):
 
-1. **Guardrails** — gợi ý ứng viên từ repo rồi nhờ xác nhận:
-   - File/thư mục KHÔNG được sửa (generated, migrations đã chạy, lockfile, `dist/`, `vendor/`).
-   - Thao tác cần xác nhận trước (chạy migration, xoá data, push, sửa CI/secrets).
-   - Quy tắc bắt buộc ("luôn chạy test trước khi báo xong", "không thêm dependency mới nếu không hỏi").
-2. **Definition of Done** — một thay đổi coi là xong khi nào? (vd: `<lệnh test>` xanh + `<lint>` sạch + `<typecheck>` pass). Đây là cái agent dùng để self-verify.
+1. **Guardrails** — suggest candidates from the repo, then ask to confirm:
+   - Files/dirs that must NOT be edited (generated, already-run migrations, lockfiles, `dist/`, `vendor/`).
+   - Operations that need confirmation first (running a migration, deleting data, pushing, editing CI/secrets).
+   - Mandatory rules ("always run tests before declaring done", "don't add a new dependency without asking").
+2. **Definition of Done** — when does a change count as finished? (e.g. `<test command>` green + `<lint>` clean + `<typecheck>` pass). This is what the agent uses to self-verify.
 
-Nếu repo quá lớn / đa module → hỏi có muốn **phân tầng**: `CLAUDE.md` gọn ở root + file con cho module phức tạp (closest-file-wins). Mặc định: chỉ root.
+If the repo is very large / multi-module → ask whether to **layer** it: a lean root `CLAUDE.md` + child files for complex modules (closest-file-wins). Default: root only.
 
-### B4 — Viết CLAUDE.md theo khung
+### Step 4 — Write CLAUDE.md to the template
 
-Bắt buộc mở đầu bằng:
+Must begin with:
 
 ```md
 # CLAUDE.md
@@ -70,52 +70,52 @@ Bắt buộc mở đầu bằng:
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 ```
 
-Khung nội dung (bỏ mục nào không có thực — đừng bịa):
+Content template (drop any section that doesn't truly apply — don't invent):
 
 ```md
-## Repo này là gì
-<WHY + WHAT: 1–3 câu. Cái mà đọc 1 file không ra.>
+## What this repo is
+<WHY + WHAT: 1–3 sentences. The thing you can't get from reading one file.>
 
 ## Build / Test / Run
-- Build: <lệnh>
-- Test toàn bộ: <lệnh>
-- Chạy MỘT test: <lệnh cụ thể copy-paste chạy ngay>
-- Lint / typecheck: <lệnh>
-- Tool đặc thù: <bun/uv/...>
+- Build: <command>
+- Run all tests: <command>
+- Run a SINGLE test: <exact copy-paste command>
+- Lint / typecheck: <command>
+- Specific tooling: <bun/uv/...>
 
-## Kiến trúc tổng quan
-<Big picture cần đọc nhiều file mới hiểu: luồng chính, ranh giới module,
-"trái tim" hệ thống nằm ở đâu. Dùng pointer path/file.ts:line, không copy code.>
+## Architecture overview
+<Big picture you only get from reading many files: the main flow, module boundaries,
+where the system's "heart" is. Use pointers path/file.ts:line, don't copy code.>
 
-## Quy ước riêng (chỉ cái KHÔNG hiển nhiên)
-<Pattern bắt buộc mà agent không tự đoán. KHÔNG ghi style/format — để linter lo.>
+## Conventions (only the NON-obvious)
+<Mandatory patterns the agent can't guess. NO style/format — leave that to the linter.>
 
 ## Guardrails
-- KHÔNG sửa: <file/thư mục>.
-- LUÔN <chạy test/lint> trước khi báo hoàn thành.
-- Cần xác nhận trước khi: <thao tác nguy hiểm>.
+- DON'T edit: <files/dirs>.
+- ALWAYS <run tests/lint> before declaring done.
+- Require confirmation before: <dangerous operation>.
 
 ## Definition of Done
-Một thay đổi coi là xong khi: <bằng chứng cụ thể — test xanh, build ok, lint sạch>.
+A change is done when: <concrete evidence — tests green, build ok, lint clean>.
 ```
 
-### B5 — Tự kiểm trước khi giao (self-check)
+### Step 5 — Self-check before handing off
 
-Đối chiếu file vừa viết với checklist, sửa nếu vi phạm:
+Compare the file you wrote against the checklist; fix any violation:
 
-- [ ] Dưới 300 dòng (lý tưởng <120). Nếu dài → cắt, đẩy chi tiết theo-task ra file riêng + link.
-- [ ] Không có cây thư mục, không lời khuyên chung chung, không style/convention thừa.
-- [ ] Dùng pointer (`path:line`) thay vì copy snippet.
-- [ ] Có lệnh chạy MỘT test, copy-paste chạy được.
-- [ ] Có mục Guardrails và Definition of Done (đây là phần làm nên "harness").
-- [ ] Guardrails/Quy ước là heuristic ở mức ranh giới, KHÔNG phải chuỗi luật cứng/edge-case; luật chỉ đúng 1 task đã đẩy ra file theo-task.
-- [ ] Mọi lệnh đã kiểm là tồn tại thật trong repo (đừng bịa script không có).
+- [ ] Under 300 lines (ideally <120). If long → cut, push task-specific detail to a separate file + link.
+- [ ] No directory tree, no generic advice, no surplus style/convention.
+- [ ] Uses pointers (`path:line`) instead of copied snippets.
+- [ ] Has a single-test command, copy-paste runnable.
+- [ ] Has Guardrails and Definition of Done sections (this is what makes it a "harness").
+- [ ] Guardrails/conventions are boundary-level heuristics, NOT if-this-then-that chains for each edge case; rules true for only one task are pushed to a per-task file.
+- [ ] Every command checked actually exists in the repo (don't invent scripts that aren't there).
 
-### B6 — Báo cáo
+### Step 6 — Report
 
-Tóm tắt cho người dùng: đã tạo/cập nhật file gì, đã hợp nhất nguồn nào (Cursor/Copilot/README), số dòng, và các Guardrails/DoD đã chốt. Nhắc: **AGENTS.md cho Codex sẽ làm ở đợt sau** (khi đó chỉ cần `ln -s AGENTS.md CLAUDE.md` để dùng chung một nguồn).
+Summarize for the user: which files were created/updated, which sources were consolidated (Cursor/Copilot/README), the line count, and the Guardrails/DoD that were locked in. Note: **AGENTS.md for Codex comes in a later round** (then it's just `ln -s AGENTS.md CLAUDE.md` to share one source).
 
-## Ngoài phạm vi (hiện tại)
+## Out of scope (for now)
 
-- Không sinh `AGENTS.md` / không symlink — để dành đợt sau theo yêu cầu (focus Claude Code trước).
-- Không thiết lập hooks/settings.json/MCP — đó là các trụ cột harness khác, làm riêng.
+- Doesn't generate `AGENTS.md` / no symlink — saved for a later round on request (focus Claude Code first).
+- Doesn't set up hooks/settings.json/MCP — those are other harness pillars, done separately.

@@ -1,34 +1,34 @@
-# Specs — spec-driven development (nửa còn lại của Trụ cột 2)
+# Specs — spec-driven development (the other half of Pillar 2)
 
-Trụ cột 2 là **"Repo-local instructions & Specs"**. Mức 1 (`/init-harness` → `CLAUDE.md`) lo nửa
-**instructions**: luật bền, đúng xuyên *mọi* task. `FEATURE.md` lo nửa **specs**: định nghĩa **một
-feature cụ thể TRƯỚC khi code**. Spec rõ → agent ít lạc hướng; acceptance criteria rõ → có sẵn cái
-cho eval Mức 5 chấm đậu/rớt.
+Pillar 2 is **"Repo-local instructions & Specs"**. Level 1 (`/init-harness` → `CLAUDE.md`) covers the
+**instructions** half: durable rules that hold across *every* task. `FEATURE.md` covers the **specs**
+half: defining **one specific feature BEFORE you code it**. A clear spec → the agent strays less; clear
+acceptance criteria → you already have what a Level 5 eval grades pass/fail.
 
-## Khi nào dùng
+## When to use it
 
-- Feature **đủ lớn để dễ lạc** / nhiều bước / nhiều người → viết spec trước.
-- Việc nhỏ, một-phát-xong → **bỏ qua**. Đừng biến spec thành nghi thức.
+- A feature **big enough to get lost in** / multi-step / multi-person → write a spec first.
+- A small, one-shot job → **skip it**. Don't turn specs into ritual.
 
-## `FEATURE.md` vs `TASK.md` (đừng nhầm — chúng bổ sung nhau)
+## `FEATURE.md` vs `TASK.md` (don't confuse them — they complement each other)
 
-| | `FEATURE.md` (ở đây) | `TASK.md` (Mức 4) |
+| | `FEATURE.md` (here) | `TASK.md` (Level 4) |
 |---|---|---|
-| Mục đích | **plan TRƯỚC khi code**: cái gì + tiêu chí đậu | **trạng thái sống còn QUA session** |
-| Vòng đời | viết 1 lần đầu feature, ít đổi | cập nhật liên tục ở mỗi mốc |
-| Trả lời | "feature này *là gì*, xong khi nào" | "*đang* làm tới đâu, bước kế" |
+| Purpose | **plan BEFORE coding**: what + pass criteria | **state that survives ACROSS sessions** |
+| Lifecycle | written once at the feature's start, changes little | updated continuously at each milestone |
+| Answers | "what *is* this feature, when is it done" | "where am I *right now*, what's next" |
 
-Feature lớn thường dùng **cả hai**: `FEATURE.md` chốt đích, `TASK.md` theo dõi đường đi.
+A big feature usually uses **both**: `FEATURE.md` fixes the target, `TASK.md` tracks the path.
 
-## Cài
+## Install
 
 ```bash
 mkdir -p docs/specs
-cp FEATURE.md docs/specs/<tên-feature>.md
+cp FEATURE.md docs/specs/<feature-name>.md
 ```
 
-## Nâng cao
+## Advanced
 
-Feature lớn / cả team → dùng framework chuyên: **GitHub Spec Kit**, **12-Factor Agents** (link
-trong `docs/harness-engineering-tutorial.md`). `FEATURE.md` chỉ là bản tối giản để bắt đầu — đủ
-để có spec, không bắt bạn nuốt cả framework.
+Big feature / whole team → use a dedicated framework: **GitHub Spec Kit**, **12-Factor Agents** (links
+in `docs/harness-engineering-tutorial.md`). `FEATURE.md` is just a minimal starting point — enough to
+have a spec, without forcing you to adopt a whole framework.

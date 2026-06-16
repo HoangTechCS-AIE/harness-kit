@@ -110,16 +110,16 @@ function rel(p) {
 function place(srcRel, destAbs, force) {
   const src = path.join(KIT, srcRel)
   if (!fs.existsSync(src)) {
-    console.log(`  ⚠ missing in kit, skipping: ${srcRel}`)
+    console.log(`  missing  ${srcRel} (not in kit, skipping)`)
     return false
   }
   if (fs.existsSync(destAbs) && !force) {
-    console.log(`  • exists, keeping: ${rel(destAbs)}  (use --force to overwrite)`)
+    console.log(`  kept     ${rel(destAbs)}  (use --force to overwrite)`)
     return false
   }
   fs.mkdirSync(path.dirname(destAbs), { recursive: true })
   fs.cpSync(src, destAbs, { recursive: true })
-  console.log(`  ✓ ${rel(destAbs)}`)
+  console.log(`  added    ${rel(destAbs)}`)
   return true
 }
 

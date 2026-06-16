@@ -1,40 +1,40 @@
 <!--
-FEATURE.md — spec một feature TRƯỚC khi viết code (spec-driven development).
+FEATURE.md — spec one feature BEFORE writing code (spec-driven development).
 
-Đây là nửa "Specs" của trụ cột "Repo-local instructions & Specs": CLAUDE.md (Mức 1) lo luật bền
-xuyên MỌI task; FEATURE.md lo định nghĩa MỘT feature cụ thể trước khi bắt tay. Spec rõ → agent
-chạy đúng hướng, ít lạc; acceptance criteria rõ → có cái để eval (Mức 5) chấm đậu/rớt.
+This is the "Specs" half of the "Repo-local instructions & Specs" pillar: CLAUDE.md (Level 1) covers
+durable rules across EVERY task; FEATURE.md defines ONE specific feature before you start. A clear spec
+→ the agent runs in the right direction; clear acceptance criteria → something a Level 5 eval can grade.
 
-Cách dùng: copy cho mỗi feature đáng-kể (vd docs/specs/<feature>.md). Việc nhỏ thì bỏ qua —
-đừng nghi thức hoá. Điền đủ phần, xoá comment này khi dùng thật.
+How to use: copy it per significant feature (e.g. docs/specs/<feature>.md). Skip small jobs — don't
+ritualize it. Fill in the sections, delete this comment when you use it for real.
 -->
 
-# Feature: <tên ngắn gọn>
+# Feature: <short name>
 
-## Vấn đề / vì sao
-<Giải quyết cái gì cho ai. 1–3 câu. Nếu không nói rõ được "vì sao", khoan code.>
+## Problem / why
+<What it solves and for whom. 1–3 sentences. If you can't state the "why", don't code yet.>
 
-## Phạm vi
+## Scope
 
-### Trong phạm vi
+### In scope
 - 
 
-### NGOÀI phạm vi (quan trọng — chặn scope creep)
+### OUT of scope (important — blocks scope creep)
 - 
 
-## Ràng buộc
-<Bắt buộc kỹ thuật/nghiệp vụ: API phải giữ nguyên, không thêm dependency, giới hạn hiệu năng…>
+## Constraints
+<Technical/business musts: API must stay stable, no new dependencies, performance limits…>
 - 
 
-## Acceptance criteria (đo được — đậu/rớt rõ ràng)
-<Cái PHẢI đúng thì feature mới coi là xong. Đây cũng là nguồn cho golden task ở Mức 5.>
+## Acceptance criteria (measurable — clear pass/fail)
+<What MUST be true for the feature to count as done. This also feeds the Level 5 golden task.>
 - [ ] 
 - [ ] 
 
 ## Test hooks
-<Sẽ kiểm bằng test nào / lệnh nào. Ưu tiên tự động hoá được.>
+<Which tests / commands will check it. Prefer things that can be automated.>
 - 
 
-## Ghi chú thiết kế & quyết định đã chốt
-<Hướng tiếp cận + lý do ngắn. Để người sau (và agent) không bàn lại từ đầu.>
+## Design notes & decisions locked
+<Approach + a short why. So the next person (and the agent) don't re-litigate from scratch.>
 - 

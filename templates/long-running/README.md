@@ -1,48 +1,49 @@
-# Long-running — việc kéo dài quá một session (Mức 4)
+# Long-running — work that spans more than one session (Level 4)
 
-Mức 4 giữ agent làm việc *đáng tin* trên thứ dài hơi: refactor nhiều ngày, migration lớn,
-agent chạy nền hàng giờ. Việc dài chết vì 3 thứ — mỗi file ở đây chặn một thứ.
+Level 4 keeps the agent working *reliably* on long-horizon work: multi-day refactors, big migrations,
+an agent running in the background for hours. Long work dies from 3 things — each file here blocks one.
 
-## 3 file, 3 vấn đề
+## 3 files, 3 problems
 
-| File | Chặn cái chết nào |
-|------|-------------------|
-| [`setup.sh`](../setup.sh) | Không về được trạng thái chạy-được (clone/agent mới không biết cài gì) |
-| [`TASK.md`](./TASK.md) | Mất trạng thái qua session / sau `/clear` |
-| [`new-worktree.sh`](../new-worktree.sh) | Nhiều task song song giẫm chân nhau |
+| File | Which death it blocks |
+|------|-----------------------|
+| [`setup.sh`](../setup.sh) | Can't get back to a runnable state (a fresh clone/agent doesn't know what to install) |
+| [`TASK.md`](./TASK.md) | State lost across sessions / after `/clear` |
+| [`new-worktree.sh`](../new-worktree.sh) | Parallel tasks step on each other |
 
-## Cài đặt
+## Install
 
 ```bash
-cp setup.sh new-worktree.sh .          # vào root repo
+cp setup.sh new-worktree.sh .          # into the repo root
 chmod +x setup.sh new-worktree.sh
-cp long-running/TASK.md .              # khi bắt đầu một việc dài cụ thể
+cp long-running/TASK.md .              # when you start a specific long task
 ```
 
-Rồi **trỏ `CLAUDE.md`** vào chúng để agent biết dùng:
+Then **point `CLAUDE.md`** at them so the agent knows to use them:
 
 ```md
 ## Build / Test / Run
-- Dựng môi trường: ./setup.sh   (idempotent — chạy lại an toàn)
+- Set up the environment: ./setup.sh   (idempotent — safe to re-run)
 
 ## Long-running
-- Việc dài đang chạy ghi ở TASK.md — đọc trước khi bắt đầu, cập nhật khi tới mốc.
+- An in-flight long task is tracked in TASK.md — read it before starting, update it at milestones.
 ```
 
-## Khi nào dùng cái nào (đây là phần discipline)
+## When to use which (this is the discipline part)
 
-File chỉ là công cụ — biết *khi nào* rút ra mới là kỹ năng:
+The files are just tools — knowing *when* to reach for them is the skill:
 
-- **`setup.sh`** — chạy ngay khi vào checkout mới, và bất cứ khi nào nghi môi trường lệch.
-  Giữ nó **idempotent + fail-fast**: agent nền phải dựng lại được mà không cần hỏi.
-- **`TASK.md`** — mở ra khi việc *sẽ vắt qua nhiều session* hoặc bạn sắp `/clear`. Cập nhật ở
-  **mốc** (xong một phần, chốt một quyết định), không phải mỗi dòng code. Nó là thứ agent kế
-  tiếp đọc để tiếp tục — viết cho "người lạ" hiểu, không viết tốc ký cho riêng mình.
-- **`new-worktree.sh`** — tách worktree khi chạy **≥2 hướng song song**, hoặc khi một task dài
-  cần cô lập khỏi nhánh chính. Một task = một worktree. Xong: `git worktree remove <dir>`.
+- **`setup.sh`** — run it the moment you enter a fresh checkout, and whenever you suspect the
+  environment drifted. Keep it **idempotent + fail-fast**: a background agent must be able to rebuild
+  it without asking.
+- **`TASK.md`** — open it when the work *will span multiple sessions* or you're about to `/clear`.
+  Update it at **milestones** (a part done, a decision locked), not every line of code. It's what the
+  next agent reads to continue — write it so a "stranger" understands, not as shorthand for yourself.
+- **`new-worktree.sh`** — split off a worktree when running **2+ directions in parallel**, or when a
+  long task needs isolation from the main branch. One task = one worktree. Done: `git worktree remove <dir>`.
 
-## Chạy nền & quay lại kiểm
+## Running in the background & checking back
 
-Việc thật dài có thể chạy ở background rồi quay lại xem (không ngồi canh). Nguyên tắc:
-khúc việc phải **resume được** — nếu đứt giữa chừng, `TASK.md` + `setup.sh` đủ để bắt lại từ
-mốc gần nhất, không phải làm lại từ đầu. Đó là lý do hai file kia tồn tại.
+Genuinely long work can run in the background while you check back (no babysitting). The principle:
+a chunk of work must be **resumable** — if it's cut off mid-way, `TASK.md` + `setup.sh` are enough to
+pick up from the latest milestone instead of starting over. That's why those two files exist.

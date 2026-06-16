@@ -1,26 +1,26 @@
-# MCP hygiene — checklist dọn tool thừa (Mức 2)
+# MCP hygiene — a checklist for pruning surplus tools (Level 2)
 
-Mỗi MCP server bạn cắm sẽ **bơm toàn bộ định nghĩa tool của nó vào context ở MỌI lượt** —
-dù lượt đó không dùng tới. 5 server ít dùng có thể ngốn hàng nghìn token mỗi lượt và làm
-model "rối tay" khi chọn tool. Đây là **thuế context vĩnh viễn**, không phải vấn đề an toàn
-(an toàn là Mức 3).
+Every MCP server you plug in **injects all of its tool definitions into context on EVERY turn** —
+even turns that don't use it. Five rarely-used servers can eat thousands of tokens per turn and
+make the model "fumble" when choosing a tool. This is a **permanent context tax**, not a safety
+issue (safety is Level 3).
 
-## Cách xem đang cắm những gì
+## See what's plugged in
 
 ```bash
-claude mcp list        # liệt kê MCP server đang cấu hình
+claude mcp list        # list the configured MCP servers
 ```
 
-## Với MỖI server, hỏi 3 câu
+## For EACH server, ask 3 questions
 
-- [ ] **Tháng qua có thực sự gọi tool của nó không?** Không → gỡ.
-- [ ] **Nó thêm bao nhiêu tool vào mỗi lượt, mà bạn chỉ dùng 1–2?** Thừa nhiều → gỡ hoặc tìm bản gọn hơn.
-- [ ] **Có thể thay bằng CLI sẵn có không?** (vd `gh` thay vì MCP GitHub cho việc đơn giản) → ưu tiên CLI, gỡ MCP.
+- [ ] **Did you actually call its tools in the past month?** No → remove it.
+- [ ] **How many tools does it add per turn when you only use 1–2?** Lots of surplus → remove it or find a leaner build.
+- [ ] **Can an existing CLI replace it?** (e.g. `gh` instead of a GitHub MCP for simple things) → prefer the CLI, drop the MCP.
 
-## Nguyên tắc
+## Principle
 
-> **Tool ít mà rõ > nhiều tool chồng chéo.** Giữ đúng cái bạn dùng hằng tuần.
-> Cắm thêm khi *thật sự* cần một nguồn/khả năng mới, không cắm "để sẵn cho chắc".
+> **Few clear tools > many overlapping ones.** Keep exactly what you use weekly.
+> Add more only when you *genuinely* need a new source/capability, not "just in case".
 
-Cắm MCP "để sẵn cho chắc" là cái bẫy phổ biến nhất ở Mức 2: nó âm thầm làm mọi session
-đắt hơn và kém chính xác hơn, mà không ai để ý.
+Plugging in an MCP "just in case" is the most common Level 2 trap: it quietly makes every session
+more expensive and less accurate, without anyone noticing.

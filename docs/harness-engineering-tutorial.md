@@ -210,7 +210,7 @@ Không đo thì không cải tiến được. Với agent, "đo" khó hơn code 
 
 Đây là bài thực hành đầu tiên nên làm với team — đòn bẩy lớn nhất, làm trong 1 buổi. Phần này tập trung `CLAUDE.md` (Claude Code); `AGENTS.md` cho Codex để đợt sau (xem cuối mục).
 
-### ⚠️ Đừng auto-generate bằng `/init` mặc định
+### Đừng auto-generate bằng `/init` mặc định
 
 Nguồn chuẩn [Writing a good CLAUDE.md — HumanLayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) nói thẳng: ***"don't auto-generate with `/init` — carefully craft its contents"***. Lý do: `/init` chỉ **mô tả hiện trạng** repo, còn thiếu hai thứ làm nên "harness" — **Guardrails** (ràng buộc hành vi agent) và **Definition of Done** (bằng chứng để agent tự verify).
 

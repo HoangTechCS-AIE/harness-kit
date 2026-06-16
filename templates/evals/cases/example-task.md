@@ -1,33 +1,33 @@
 <!--
-Một "golden task" = một việc đại diện + tiêu chí đậu KHÁCH QUAN, để chạy lại được sau mỗi
-lần sửa harness. Copy file này cho mỗi case. Đặt tên theo việc: add-endpoint.md, fix-flaky-test.md...
+A "golden task" = one representative job + OBJECTIVE pass criteria, so it can be re-run after every
+harness change. Copy this file per case. Name it after the job: add-endpoint.md, fix-flaky-test.md...
 
-Nguyên tắc: done-criteria phải đo được bằng MÁY nếu có thể (lệnh chạy ra pass/fail), chỉ rớt
-xuống chấm bằng người khi bất khả kháng. "Trông có vẻ đúng" KHÔNG phải tiêu chí.
-Xoá comment này khi dùng thật.
+Principle: done-criteria must be MACHINE-checkable where possible (a command that returns pass/fail);
+fall back to human grading only when unavoidable. "Looks right" is NOT a criterion.
+Delete this comment when you use it for real.
 -->
 
-# Case: <tên việc — vd "thêm endpoint GET /users/:id">
+# Case: <the job — e.g. "add endpoint GET /users/:id">
 
-## Task (đưa nguyên văn cho agent)
-<Lời nhắc y như bạn sẽ gõ cho agent. Càng giống thực tế càng tốt.>
+## Task (give this verbatim to the agent)
+<The exact prompt you'd type to the agent. The closer to reality, the better.>
 
-## Setup (repo phải ở trạng thái nào trước khi chạy)
-<Branch/commit nền, dữ liệu seed, biến môi trường. Để case lặp lại được giống nhau mỗi lần.>
+## Setup (what state the repo must be in before running)
+<Base branch/commit, seed data, env vars. So the case repeats identically every time.>
 - Base: <commit/branch>
 - 
 
-## Done-criteria (KHÁCH QUAN — đậu/rớt rõ ràng)
-<Cái PHẢI đúng sau khi agent xong. Ưu tiên lệnh chạy ra pass/fail.>
-- [ ] `<lệnh test>` xanh
-- [ ] `<lệnh lint / typecheck>` sạch
-- [ ] <thay đổi cụ thể tồn tại — vd "route mới trả 200 với id hợp lệ, 404 nếu không">
-- [ ] KHÔNG đụng <file/đường ngoài phạm vi>
+## Done-criteria (OBJECTIVE — clear pass/fail)
+<What MUST be true after the agent finishes. Prefer commands that return pass/fail.>
+- [ ] `<test command>` green
+- [ ] `<lint / typecheck command>` clean
+- [ ] <a concrete change exists — e.g. "new route returns 200 for a valid id, 404 otherwise">
+- [ ] Did NOT touch <out-of-scope file/path>
 
-## Cách chấm
-<Tự động được thì ghi đúng lệnh. Phải chấm tay thì ghi rubric ngắn, đừng để "tự hiểu".>
-- Tự động: `<lệnh trả exit code>`
-- Tay (nếu cần): <1–2 câu rubric>
+## How to grade
+<If automatable, write the exact command. If it must be manual, write a short rubric; don't leave it "implied".>
+- Automated: `<command that returns an exit code>`
+- Manual (if needed): <1–2 sentence rubric>
 
-## Tham chiếu (tùy chọn)
-<Commit/PR "đúng" để so, nếu có. Giúp thấy agent lệch ở đâu.>
+## Reference (optional)
+<A "correct" commit/PR to compare against, if any. Helps see where the agent diverged.>

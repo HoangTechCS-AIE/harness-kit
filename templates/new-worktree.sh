@@ -1,35 +1,35 @@
 #!/usr/bin/env bash
-# new-worktree.sh — tạo một git worktree + branch riêng cho một task song song/dài.
+# new-worktree.sh — create a git worktree + its own branch for a parallel/long task.
 #
-# Mức 4 (long-running): mỗi task nặng nên có cây làm việc RIÊNG, để chạy song song
-# mà không giẫm chân (không stash/switch liên tục, không sửa đè lên nhau).
+# Level 4 (long-running): each heavy task should have its OWN working tree, so parallel runs
+# don't step on each other (no constant stash/switch, no overwriting each other's edits).
 #
-# Dùng:   ./new-worktree.sh <tên-task>
-# Vd:     ./new-worktree.sh refactor-auth
-#   -> tạo branch 'refactor-auth' + thư mục ../<repo>-refactor-auth (cạnh repo, KHÔNG lồng trong).
+# Usage:  ./new-worktree.sh <task-name>
+# E.g.:   ./new-worktree.sh refactor-auth
+#   -> creates branch 'refactor-auth' + dir ../<repo>-refactor-auth (NEXT TO the repo, not nested).
 
 set -euo pipefail
 
 name="${1:-}"
-[ -n "$name" ] || { echo "dùng: $0 <tên-task>   (vd: refactor-auth)"; exit 1; }
+[ -n "$name" ] || { echo "usage: $0 <task-name>   (e.g. refactor-auth)"; exit 1; }
 
-# Phải đứng trong một git repo.
-git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "✗ không phải git repo"; exit 1; }
+# Must be inside a git repo.
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "not a git repo"; exit 1; }
 
 root="$(git rev-parse --show-toplevel)"
 repo="$(basename "$root")"
-dir="$root/../${repo}-${name}"          # đặt CẠNH repo, không lồng -> git status không nhiễu
+dir="$root/../${repo}-${name}"          # place it NEXT TO the repo, not nested -> git status stays clean
 
-[ -e "$dir" ] && { echo "✗ đã tồn tại: $dir"; exit 1; }   # fail-fast, không ghi đè
+[ -e "$dir" ] && { echo "already exists: $dir"; exit 1; }   # fail-fast, don't overwrite
 
-# Tách từ base mới nhất. Đổi 'main' nếu repo bạn dùng tên khác.
+# Branch from the latest base. Change 'main' if your repo uses a different name.
 base="$(git symbolic-ref --quiet --short HEAD || echo main)"
 
 if git show-ref --verify --quiet "refs/heads/${name}"; then
-  git worktree add "$dir" "$name"            # branch đã có -> checkout vào worktree mới
+  git worktree add "$dir" "$name"            # branch exists -> check it out into the new worktree
 else
-  git worktree add -b "$name" "$dir" "$base" # branch mới tách từ base hiện tại
+  git worktree add -b "$name" "$dir" "$base" # new branch from the current base
 fi
 
-echo "✓ worktree: $dir   (branch: $name)"
-echo "  cd \"$dir\" để bắt đầu. Xong việc: git worktree remove \"$dir\""
+echo "worktree: $dir   (branch: $name)"
+echo "  cd \"$dir\" to start. When done: git worktree remove \"$dir\""

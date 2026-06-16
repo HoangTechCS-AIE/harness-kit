@@ -1,51 +1,55 @@
-# Evals & Observability — đo agent có làm đúng không (Mức 5)
+# Evals & Observability — measure whether the agent does the right thing (Level 5)
 
-Mức 1–4 *dựng* harness. Mức 5 là **vòng phản hồi**: làm sao biết khi bạn sửa CLAUDE.md /
-settings / skill thì agent **tốt lên hay tệ đi**? Không có Mức 5, mọi thay đổi harness chỉ là đoán.
+Levels 1–4 *build* the harness. Level 5 is the **feedback loop**: how do you know whether changing
+CLAUDE.md / settings / a skill made the agent **better or worse**? Without Level 5, every harness
+change is a guess.
 
-## Hai nửa
+## Two halves
 
-| Nửa | Trả lời | File |
-|-----|---------|------|
-| **Evals** | "Agent ra kết quả *đúng* không?" (pass/fail đo được) | [`cases/`](./cases/) |
-| **Observability** | "Agent đã *làm gì*, vì sao hỏng?" | [`observability.md`](./observability.md) |
+| Half | Answers | File |
+|------|---------|------|
+| **Evals** | "Does the agent produce the *right* result?" (measurable pass/fail) | [`cases/`](./cases/) |
+| **Observability** | "What did the agent *do*, and why did it fail?" | [`observability.md`](./observability.md) |
 
-Evals nói **đúng/sai**. Observability nói **tại sao** — và thường lộ bệnh ở mức thấp hơn
-(đọc lại file hoài = context bẩn → Mức 2; hỏi quyền liên tục → chỉnh `allow` ở Mức 3).
+Evals tell you **right/wrong**. Observability tells you **why** — and often reveals a problem at a
+lower level (re-reading files endlessly = dirty context → Level 2; constant permission prompts → fix
+`allow` at Level 3).
 
-## Vòng lặp (đây mới là cốt lõi, không phải file)
+## The loop (this is the core, not the files)
 
 ```
-define  →  run  →  read  →  fix  →  (chạy lại)
-golden     cho       đọc      sửa
+define  →  run  →  read  →  fix  →  (re-run)
+golden     the       the      the
 task       agent     trace    harness
-           chạy      / kết    (CLAUDE.md,
-                     quả      settings, skill)
+                     /result  (CLAUDE.md,
+                              settings, skill)
 ```
 
-Đòn bẩy thật: bộ golden task là **lưới chống regression cho chính harness**. Sửa CLAUDE.md xong,
-chạy lại bộ case — case trước đậu mà giờ rớt → gần như chắc chắn do thay đổi của mình (xác nhận
-bằng cách chạy lại vài lần để loại nhiễu), không phải đoán.
+The real lever: the golden-task set is a **regression net for the harness itself**. After you change
+CLAUDE.md, re-run the set — a case that used to pass and now fails → almost certainly your change
+(confirm by re-running a few times to rule out noise), not a guess.
 
-## Sự thật: Mức 5 ít "gói thành file" nhất
+## The truth: Level 5 is the least file-able
 
-Eval *thật* thì **đặc thù domain** — không kit nào ship sẵn "agent của bạn làm đúng chưa".
-Kit này chỉ cho **khung + kỷ luật**:
+A *real* eval is **domain-specific** — no kit ships "is your agent correct yet" out of the box. This
+kit only gives you the **scaffold + discipline**:
 
-- ✅ File: cấu trúc thư mục + template golden-task + guide observability.
-- 🧠 Discipline (phần lớn): *định nghĩa* "đúng" cho task của bạn, dựng bộ case, đọc trace,
-  **đóng vòng lặp** (eval phát hiện regression → sửa harness → chạy lại).
+- **File:** the folder structure + a golden-task template + an observability guide.
+- **Discipline (most of it):** *define* what "correct" means for your task, build the case set, read
+  traces, **close the loop** (eval finds a regression → fix the harness → re-run).
 
-Kit cố ý **không** ship runner code — runner là đặc thù repo, giả vờ generic sẽ thành rác.
+The kit deliberately ships **no** runner code — a runner is repo-specific, and faking a generic one
+would just be junk.
 
-## Bắt đầu
+## Getting started
 
-1. Copy `cases/example-task.md` thành một case thật, điền done-criteria *khách quan*.
-2. Gom 3–5 task **đại diện** (việc agent làm thường xuyên nhất) — không cần nhiều, cần đúng.
-3. **Lấy baseline "không harness" TRƯỚC.** Chạy bộ case một lần ở trạng thái chưa áp harness
-   (CLAUDE.md trống / trước khi cài Mức 1–4) và ghi điểm. Đây là cái **định lượng ROI của harness**:
-   chạy lại sau khi đã áp harness rồi so delta — chính là luận điểm mở đầu của ngành (đổi harness
-   làm điểm nhảy; xem `docs/harness-engineering-tutorial.md`). *Khác* với regression ở bước sau.
-4. Sau đó, trước/sau **mỗi lần sửa** harness, chạy lại bộ case và đối chiếu (chạy vài lần để loại
-   nhiễu trước khi kết luận nhân-quả).
-5. Khi một case rớt, mở [`observability.md`](./observability.md) để truy *vì sao*.
+1. Copy `cases/example-task.md` into a real case and fill in *objective* done-criteria.
+2. Gather 3–5 **representative** tasks (what the agent does most often) — you don't need many, you need the right ones.
+3. **Take a "no-harness" baseline FIRST.** Run the set once with the harness not yet applied (empty
+   CLAUDE.md / before installing Levels 1–4) and record the score. This is what **quantifies the
+   harness's ROI**: re-run after applying the harness and compare the delta — exactly the field's
+   opening thesis (changing the harness moves the score; see `docs/harness-engineering-tutorial.md`).
+   This is *different* from the regression check below.
+4. After that, before/after **each change** to the harness, re-run the set and compare (run it a few
+   times to rule out noise before concluding cause).
+5. When a case fails, open [`observability.md`](./observability.md) to trace *why*.

@@ -1,43 +1,44 @@
-# Subagents — quy tắc viết đúng (Mức 2)
+# Subagents — how to write a good one (Level 2)
 
-Subagent là **đòn bẩy chính của Mức 2**: đẩy việc nặng (đọc nhiều file, refactor lớn,
-chạy thử lặp) sang một **context riêng**, để context chính chỉ nhận *kết luận* — không bị ngập.
+A subagent is **Level 2's main lever**: push heavy work (reading many files, big refactors,
+repeated test runs) into a **separate context**, so the main context receives only *conclusions* —
+it doesn't flood.
 
-## Cài đặt
+## Install
 
-Mỗi subagent là một file `.md` trong `.claude/agents/` (cấp repo) hoặc `~/.claude/agents/` (cấp user).
-Copy file mẫu vào đó là Claude Code tự nhận:
+Each subagent is a `.md` file in `.claude/agents/` (repo-level) or `~/.claude/agents/` (user-level).
+Copy the sample file there and Claude Code picks it up automatically:
 
 ```bash
 mkdir -p .claude/agents
 cp repo-explorer.md .claude/agents/
 ```
 
-## Cấu trúc file
+## File structure
 
 ```md
 ---
 name: <kebab-case>
-description: <KHI NÀO dùng — Claude đọc dòng này để tự quyết có gọi agent này không>
-tools: Read, Grep, Glob        # (tuỳ chọn) chỉ trang bị tool agent CẦN, để nó gọn
+description: <WHEN to use it — Claude reads this line to decide whether to call this agent>
+tools: Read, Grep, Glob        # (optional) give it only the tools it NEEDS, to keep it focused
 ---
-<system prompt: vai trò + cách làm + ĐẶC BIỆT là cách TRẢ VỀ>
+<system prompt: role + how to work + ESPECIALLY how to RETURN>
 ```
 
-## 4 quy tắc không được quên
+## 4 rules you can't forget
 
-1. **`description` viết theo "khi nào dùng", không phải "là gì".** Đây là thứ agent chính
-   đọc để quyết định có ủy thác hay không. Mơ hồ → không bao giờ được gọi.
-2. **Subagent phải trả về *kết luận chắt lọc*, không phải nhật ký.** Cả lý do tồn tại của
-   subagent là để context chính KHÔNG phải nuốt thứ nó đọc. Trả raw dump = phá mục tiêu.
-3. **`tools` chỉ liệt kê cái thật cần.** Đây KHÔNG phải guardrail an toàn (đó là Mức 3) —
-   mà để agent gọn, tập trung. Agent đọc-hiểu chỉ cần `Read, Grep, Glob`.
-4. **Một subagent = một việc rõ.** Đừng gộp "đọc + sửa + test" vào một agent. Việc nặng
-   khác nhau → context riêng khác nhau.
+1. **Write `description` as "when to use", not "what it is".** This is what the main agent reads
+   to decide whether to delegate. Vague → it never gets called.
+2. **A subagent must return a *distilled conclusion*, not a log.** The whole reason a subagent
+   exists is so the main context does NOT have to swallow what it read. A raw dump defeats the purpose.
+3. **`tools` lists only what's truly needed.** This is NOT a safety guardrail (that's Level 3) —
+   it keeps the agent lean and focused. A comprehension agent only needs `Read, Grep, Glob`.
+4. **One subagent = one clear job.** Don't merge "read + edit + test" into one agent. Different
+   heavy jobs → different separate contexts.
 
-## Khi nào KHÔNG cần viết subagent mới
+## When you DON'T need a new subagent
 
-Claude Code đã có sẵn `Explore` (quét read-only), `Plan` (thiết kế), `general-purpose`.
-Chúng lo phần lớn nhu cầu cô lập context rồi. **Chỉ viết subagent riêng khi** bạn có một
-việc lặp lại, đặc thù domain mà built-in không nắm được — đừng đẻ bản generic trùng lặp,
-vì chính tool thừa là cái nhiễu context mà Mức 2 dạy phải tránh.
+Claude Code already ships `Explore` (read-only sweeps), `Plan` (design), and `general-purpose`.
+They cover most context-isolation needs already. **Only write your own subagent when** you have a
+recurring, domain-specific job the built-ins don't handle — don't spawn a redundant generic copy,
+because surplus tools are exactly the context noise Level 2 teaches you to avoid.

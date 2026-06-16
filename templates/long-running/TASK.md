@@ -1,33 +1,33 @@
 <!--
-TASK.md — bộ nhớ sống sót của một việc dài (Mức 4).
+TASK.md — the memory that survives a long task (Level 4).
 
-Việc kéo dài quá một session sẽ mất trạng thái khi `/clear` hoặc khi mở session mới.
-File này là nơi agent (và agent kế tiếp) đọc để TIẾP TỤC, thay vì dựng lại từ đầu.
+Work that spans more than one session loses its state on `/clear` or when a new session opens.
+This file is where the agent (and the next agent) reads to CONTINUE, instead of rebuilding from scratch.
 
-Cách dùng:
-  - Đặt ở root repo hoặc thư mục task. Cập nhật KHI có mốc đáng nhớ, không cập nhật mỗi dòng.
-  - Trỏ CLAUDE.md tới nó: "Việc dài đang chạy ghi ở TASK.md — đọc trước khi bắt đầu."
-  - Xong việc thì xoá / archive, đừng để TASK.md cũ làm nhiễu.
-Xoá phần comment này khi bắt đầu dùng thật.
+How to use:
+  - Put it at the repo root or the task folder. Update it AT milestones, not every line.
+  - Point CLAUDE.md at it: "An in-flight long task is tracked in TASK.md — read it before starting."
+  - When the work is done, delete / archive it; don't let a stale TASK.md add noise.
+Delete this comment when you start using it for real.
 -->
 
-# Task: <một dòng — đang làm gì>
+# Task: <one line — what you're doing>
 
-## Mục tiêu
-<Định nghĩa "xong" đo được. Việc này coi là hoàn thành khi nào?>
+## Goal
+<A measurable definition of "done". When is this task complete?>
 
-## Đang ở đâu (cập nhật mỗi mốc)
-<Trạng thái hiện tại trong 2–4 gạch đầu dòng. Cái gì đã chạy được, cái gì chưa.>
+## Where things stand (update at each milestone)
+<Current state in 2–4 bullets. What already works, what doesn't yet.>
 - 
 
-## Bước tiếp theo
-<Hành động cụ thể kế tiếp, đủ rõ để bắt tay ngay mà không phải nghĩ lại.>
+## Next steps
+<The concrete next action, clear enough to start immediately without re-thinking.>
 - [ ] 
 
-## Quyết định đã chốt (đừng mở lại)
-<Lựa chọn đã quyết + LÝ DO ngắn. Để agent sau không bàn lại từ đầu.>
+## Decisions locked (don't reopen)
+<Choices already made + a short WHY. So the next agent doesn't re-litigate from scratch.>
 - 
 
-## Cạm bẫy đã gặp
-<Thứ đã thử mà hỏng, ngõ cụt — để khỏi đâm lại.>
+## Pitfalls hit
+<Things tried that failed, dead ends — so you don't walk into them again.>
 - 

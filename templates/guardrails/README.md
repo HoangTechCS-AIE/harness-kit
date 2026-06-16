@@ -1,88 +1,90 @@
-# Guardrails — permission baseline (Mức 3)
+# Guardrails — permission baseline (Level 3)
 
-Mức 3 kiểm soát agent **được phép làm gì** — ranh giới an toàn. Khác Mức 2 (context *sạch*),
-Mức 3 lo hành động *an toàn*: chặn lệnh phá hoại, hỏi trước việc rủi ro, cho việc an toàn chạy thẳng.
+Level 3 controls **what the agent is allowed to do** — the safety boundary. Unlike Level 2 (a *clean*
+context), Level 3 is about *safe* actions: block destructive commands, ask before risky ones, let
+safe ones run straight through.
 
-## Cài đặt
+## Install
 
-Copy `settings.json` vào `.claude/` của repo:
+Copy `settings.json` into the repo's `.claude/`:
 
 ```bash
 mkdir -p .claude
 cp settings.json .claude/settings.json
 ```
 
-**Vì sao là `.claude/settings.json` (không phải `settings.local.json`):** file này **check vào repo**,
-nên cả team clone về là **tự thừa hưởng cùng một bộ guardrail**. Còn `settings.local.json` là
-ghi đè cá nhân (đã gitignore) — để dành cho tinh chỉnh riêng máy bạn, không ép lên team.
+**Why `.claude/settings.json` (not `settings.local.json`):** this file is **checked into the repo**,
+so everyone who clones it **inherits the same guardrails automatically**. `settings.local.json` is a
+personal override (gitignored) — use it for machine-specific tweaks, not to impose on the team.
 
-> ⚡ **Việc ĐẦU TIÊN sau khi copy — thêm lệnh test/lint/build vào `allow`.** Baseline cố ý chỉ
-> allow git read-only. Nếu không thêm vòng feedback của repo, Claude sẽ hỏi quyền *mỗi lần* chạy
-> test → bạn rơi đúng thói quen "bấm yes cho xong" mà mục *Insight* bên dưới gọi là nguy hiểm nhất.
-> Mở `.claude/settings.json`, thêm vào `allow` đúng lệnh của stack bạn:
+> **The FIRST thing to do after copying — add test/lint/build commands to `allow`.** The baseline
+> deliberately only allows read-only git. Without your repo's feedback loop, Claude asks permission
+> *every time* it runs tests → you fall into the "click yes to get it over with" habit the *Insight*
+> section below calls the real danger. Open `.claude/settings.json` and add your stack's commands to `allow`:
 >
 > - **Node:** `"Bash(npm run test:*)"`, `"Bash(npm run lint:*)"`, `"Bash(npm run build:*)"`
 > - **Python:** `"Bash(pytest:*)"`, `"Bash(ruff:*)"`, `"Bash(mypy:*)"`
 > - **Go:** `"Bash(go test:*)"`, `"Bash(go build:*)"`, `"Bash(go vet:*)"`
 >
-> Đây là **bắt buộc**, không phải tuỳ chọn — vòng feedback nhanh là tinh tuý xuyên suốt cả kit.
+> This is **mandatory, not optional** — a fast feedback loop is the thread running through the whole kit.
 
-## Mô hình 3 rổ
+## The 3-bucket model
 
-Mọi hành động (chạy bash, đọc/sửa file) rơi vào 1 trong 3 rổ:
+Every action (run bash, read/edit a file) falls into one of 3 buckets:
 
-| Rổ | Nghĩa | Ví dụ trong baseline |
-|----|-------|----------------------|
-| **deny** | cấm tuyệt đối, agent không gọi được | `rm -rf`, đọc `.env`/`secrets/**`, đọc key `*.pem` |
-| **ask** | dừng lại hỏi bạn trước | `git push`, `git reset --hard`, `git clean`, `rm` |
-| **allow** | chạy thẳng, không hỏi | `git status`, `git diff`, `git log`, `git branch` |
+| Bucket | Meaning | Examples in the baseline |
+|--------|---------|--------------------------|
+| **deny** | absolutely forbidden, the agent can't call it | `rm -rf`, read `.env`/`secrets/**`, read `*.pem` keys |
+| **ask** | stop and ask you first | `git push`, `git reset --hard`, `git clean`, `rm` |
+| **allow** | run straight through, no prompt | `git status`, `git diff`, `git log`, `git branch` |
 
-Cú pháp rule: `Tool(specifier)`.
-- Bash khớp theo **tiền tố**: `Bash(npm run test:*)` khớp mọi lệnh bắt đầu bằng `npm run test`.
-- File theo kiểu **gitignore**: `Read(./secrets/**)`, `Edit(./dist/**)`.
+Rule syntax: `Tool(specifier)`.
+- Bash matches by **prefix**: `Bash(npm run test:*)` matches any command starting with `npm run test`.
+- Files match **gitignore-style**: `Read(./secrets/**)`, `Edit(./dist/**)`.
 
-## Cách mở rộng cho repo của bạn
+## Extend it for your repo
 
-Baseline cố ý **tối giản và universal**. Hãy thêm cái đặc thù repo:
+The baseline is deliberately **minimal and universal**. Add what's specific to your repo:
 
-- **Vào `allow`** — lệnh chạy hằng ngày, an toàn, để khỏi bị hỏi liên tục:
+- **Into `allow`** — safe, daily commands so you aren't asked constantly:
   `Bash(npm run test:*)`, `Bash(npm run lint:*)`, `Bash(pytest:*)`, `Bash(make:*)`.
-- **Vào `ask`** — việc đặc thù repo mà *hệ quả lớn*:
-  chạy migration (`Bash(npm run migrate:*)`), deploy, `Bash(docker compose down:*)`.
-- **Vào `deny`** — path không bao giờ được sửa/đọc:
+- **Into `ask`** — repo-specific actions with *big consequences*:
+  running a migration (`Bash(npm run migrate:*)`), deploys, `Bash(docker compose down:*)`.
+- **Into `deny`** — paths that must never be edited/read:
   `Edit(./dist/**)`, `Edit(./vendor/**)`, `Read(./**/*.key)`.
 
-> Mẹo: đừng nhồi `allow` quá rộng. Mỗi lần Claude hỏi là một lần bạn *review* — nhồi allow
-> nhiều quá là tự bỏ chốt review của chính mình.
+> Tip: don't over-stuff `allow`. Every time Claude asks is a chance for you to *review* — over-stuffing
+> `allow` throws away your own review checkpoint.
 
-## Insight: deny ≠ bảo mật kín kẽ
+## Insight: deny ≠ airtight security
 
-Deny-list **không** chống được kẻ địch (agent có thể lách: viết `rm` qua script, base64…).
-Nó là **lưới an toàn + giảm ma sát**:
-- `deny`/`ask` chặn **tai nạn** (xoá nhầm, push nhầm) — phòng *lỗi*, không phòng *tấn công*.
-- `allow` cho lệnh an toàn chạy thẳng → bạn đỡ thói quen "bấm yes cho xong" (thói quen đó mới
-  là cái nguy hiểm thật).
+A deny-list **doesn't** stop an adversary (an agent can route around it: write `rm` via a script,
+base64…). It's a **safety net + friction reducer**:
+- `deny`/`ask` block **accidents** (deleting/pushing by mistake) — they guard against *errors*, not *attacks*.
+- `allow` lets safe commands run straight through → you avoid the "click yes to get it over with"
+  habit (that habit is the real danger).
 
-**An toàn thật sự** vẫn là **review diff + plan mode** trước khi cho agent hành động — đó là
-kỷ luật runtime, không gói thành file được.
+**Real safety** is still **reviewing diffs + plan mode** before letting the agent act — that's runtime
+discipline, not something you can package into a file.
 
-## Nội dung ngoài & prompt injection
+## External content & prompt injection
 
-`deny`/`ask` ở trên chặn *tai nạn*, **không** chặn được prompt injection. Nội dung agent đọc từ
-web, issue, PR, log… là **dữ liệu — không phải lệnh**, nhưng kẻ xấu có thể giấu chỉ thị trong đó
-để lái agent. Đây là **kỷ luật runtime** (nên kit không nhồi hook/CI-scan sẵn), vài chốt thực dụng:
+The `deny`/`ask` rules above block *accidents*; they **don't** stop prompt injection. Content the agent
+reads from the web, issues, PRs, logs… is **data — not commands**, but an attacker can hide instructions
+in it to steer the agent. This is **runtime discipline** (so the kit ships no pre-baked hook/CI-scan), a
+few practical guards:
 
-- Đọc nội dung ngoài (web/issue/PR) trong **plan mode** — agent *đề xuất* trước khi *hành động*.
-- KHÔNG cho agent tự chạy lệnh / `curl` lấy ra từ nội dung nó vừa fetch về.
-- Input không tin cậy → tách **session riêng**, đừng trộn vào session đang có quyền cao.
+- Read external content (web/issue/PR) in **plan mode** — the agent *proposes* before it *acts*.
+- DON'T let the agent auto-run a command / `curl` pulled out of content it just fetched.
+- Untrusted input → split into a **separate session**; don't mix it into a high-privilege session.
 
-Quét tự động ở CI và phần nền sâu hơn: xem `docs/harness-engineering-tutorial.md` (link **Lurkr**
-cho CI-scan, **OpenHands — mitigating prompt injection** cho nền tảng).
+Automated CI scanning and deeper background: see `docs/harness-engineering-tutorial.md` (the **Lurkr**
+link for CI-scan, **OpenHands — mitigating prompt injection** for the background).
 
-## Nâng cao (tùy chọn): Hooks
+## Advanced (optional): Hooks
 
-Khi cần *logic* phức tạp hơn allow/deny tĩnh — vd "chặn mọi edit vào path bảo vệ", "tự chạy
-lint sau mỗi lần sửa" — dùng **hook**: một script chạy *trước/sau* mỗi tool call. Khai báo trong
+When you need *logic* beyond static allow/deny — e.g. "block every edit to a protected path", "auto-run
+lint after each edit" — use a **hook**: a script that runs *before/after* every tool call. Declare it in
 `settings.json`:
 
 ```json
@@ -95,12 +97,12 @@ lint sau mỗi lần sửa" — dùng **hook**: một script chạy *trước/sa
 }
 ```
 
-Script đọc JSON tool-call từ stdin; **exit code 2 = chặn**, kèm message ra stderr. Vì hook chặn
-là script đặc thù từng repo, kit này **không nhồi sẵn** — chỉ chỉ đường. Viết khi bạn thật sự có
-một quy tắc lặp lại mà allow/deny tĩnh không diễn đạt nổi.
+The script reads the tool-call JSON from stdin; **exit code 2 = block**, with a message on stderr.
+Because a blocking hook is repo-specific, the kit **ships none** — it just points the way. Write one
+when you genuinely have a recurring rule that static allow/deny can't express.
 
-**Audit-log (`PostToolUse`)** — ghi lại *mọi* tool call để xem lại sau. Đây là thứ
-`evals/observability.md` (Mức 5) trỏ tới; hook này **generic, không đặc thù repo**:
+**Audit-log (`PostToolUse`)** — record *every* tool call to review later. This is what
+`evals/observability.md` (Level 5) points to; this hook is **generic, not repo-specific**:
 
 ```json
 {
@@ -112,7 +114,7 @@ một quy tắc lặp lại mà allow/deny tĩnh không diễn đạt nổi.
 }
 ```
 
-`audit-log.sh` chỉ cần nối payload stdin vào một file — mỗi dòng là JSON một tool call:
+`audit-log.sh` just appends the stdin payload to a file — one JSON tool-call per line:
 
 ```bash
 #!/usr/bin/env bash

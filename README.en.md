@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛠️ harness-kit
+# harness-kit
 
 **Set up any repo for a coding agent (Claude Code) across the 5 maturity levels of harness engineering — in one command.**
 
@@ -19,7 +19,7 @@ orchestration, measurement) that makes an agent reliable. This kit packages it i
 **artifacts** plus a **tutorial** that teaches *when* to use each. The kit ships files; the tutorial
 teaches the discipline.
 
-## ⚙️ How it works
+## 1. How it works
 
 ```mermaid
 flowchart LR
@@ -36,7 +36,7 @@ flowchart LR
 
 One `npx` command drops artifacts in the right places; from there Claude Code reads them every session.
 
-## 🚀 Quick install
+## 2. Quick install
 
 ```bash
 npx @htechcs/harness-kit              # pick levels interactively, then install
@@ -47,7 +47,7 @@ npx @htechcs/harness-kit --levels=1,3 # specific levels only
 Requires **Node ≥18**. The command saves all docs into `docs/harness/` so your team keeps them.
 **Idempotent** — safe to re-run (`--force` to overwrite).
 
-## 🪜 The 5 levels — each prevents a failure mode
+## 3. The 5 levels — each prevents a failure mode
 
 ```mermaid
 flowchart TD
@@ -66,7 +66,7 @@ flowchart TD
 | **4 — Long-running** | long tasks break mid-way, can't resume | `setup.sh`, `new-worktree.sh`, `TASK.md` |
 | **5 — Evals & Obs** | no idea whether the agent does well or badly | golden-task template + observability guide |
 
-## 📦 Manual install per level
+## 4. Manual install per level
 
 > The installer just automates the `cp` commands below — expand them to understand/do it by hand.
 
@@ -122,18 +122,18 @@ mkdir -p docs/specs && cp templates/spec/FEATURE.md docs/specs/<feature>.md
 ```
 </details>
 
-## 🔗 Level dependencies
+## 5. Level dependencies
 
 - **Level 1 first** — it's the backbone; later levels reference `CLAUDE.md`.
 - **Levels 3 & 4** both "point `CLAUDE.md` to" their artifacts → require Level 1 done.
 - **Level 5** needs at least one level applied to have a change to measure (see the feedback loop above).
 
-## 📚 Docs
+## 6. Docs
 
 `docs/harness-engineering-tutorial.en.md` ([Tiếng Việt](docs/harness-engineering-tutorial.md)) — the
 why + *when* to use each piece (after install: `docs/harness/`). Full industry-wide source catalog:
 [Awesome Harness Engineering](https://github.com/walkinglabs/awesome-harness-engineering).
 
-## 📄 License
+## 7. License
 
 [MIT](LICENSE).

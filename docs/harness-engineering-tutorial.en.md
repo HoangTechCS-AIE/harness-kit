@@ -210,7 +210,7 @@ No measurement, no improvement. With agents, "measuring" is harder than regular 
 
 This is the first exercise to do with a team — the biggest lever, doable in one afternoon. This part focuses on `CLAUDE.md` (Claude Code); `AGENTS.md` for Codex comes later (see the end of the section).
 
-### ⚠️ Don't auto-generate with the default `/init`
+### Don't auto-generate with the default `/init`
 
 The canonical source [Writing a good CLAUDE.md — HumanLayer](https://www.humanlayer.dev/blog/writing-a-good-claude-md) says it plainly: ***"don't auto-generate with `/init` — carefully craft its contents"***. Why: `/init` only **describes the current state** of the repo, and still misses the two things that make a "harness" — **Guardrails** (constraints on agent behavior) and **Definition of Done** (evidence for the agent to self-verify).
 
